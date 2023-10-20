@@ -34,6 +34,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.grx.lsc.R
@@ -42,20 +43,14 @@ import com.grx.lsc.ui.components.OtpView
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginOtpScreen(navController: NavHostController) {
-
-    var otpValue by remember {
-        mutableStateOf("")
-    }
-
-
+fun LoginOtpScreen(viewModel: LoginViewModel) {
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { navController.popBackStack()}) {
+                        IconButton(onClick = viewModel::backPress) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = Icons.Default.KeyboardArrowLeft,
@@ -87,14 +82,14 @@ fun LoginOtpScreen(navController: NavHostController) {
             )
 
             Text(
-                text = "We have sent a verification code to +91-7000790745",
+                text = "We have sent a verification code to +91-${viewModel.mobileN0}",
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp
             )
 
             OtpView(
-                onValueChange = { otpValue = it },
-                otpValue = otpValue
+                onValueChange = { viewModel.mobileOtp = it },
+                otpValue = viewModel.mobileOtp
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -119,7 +114,7 @@ fun LoginOtpScreen(navController: NavHostController) {
             Button(
                 modifier = Modifier
                     .fillMaxWidth(),
-                onClick = { /*TODO*/ },
+                onClick =  viewModel::loginBtn,
                 shape = RoundedCornerShape(10.dp),
             ) {
                 Text("Login")
@@ -132,5 +127,5 @@ fun LoginOtpScreen(navController: NavHostController) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginOtpScreenPreview() {
-    LoginOtpScreen(rememberNavController())
+    LoginOtpScreen(hiltViewModel())
 }

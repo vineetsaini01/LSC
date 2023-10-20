@@ -23,6 +23,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.grx.lsc.R
@@ -30,7 +31,7 @@ import com.grx.lsc.ui.navigation.AppScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LoginScreen(viewModel: LoginViewModel) {
 
     Column(
         modifier = Modifier.padding(
@@ -54,9 +55,9 @@ fun LoginScreen(navController: NavHostController) {
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = "",
+            value = viewModel.mobileN0,
             leadingIcon = {Text("+91")},
-            onValueChange = {  },
+            onValueChange = { viewModel.mobileN0=it },
             label = { Text("Mobile No") }
         )
 
@@ -75,7 +76,7 @@ fun LoginScreen(navController: NavHostController) {
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
-            onClick = { navController.navigate(AppScreens.LoginOtp.route) },
+            onClick = viewModel::sendOtp,
             shape = RoundedCornerShape(10.dp),
         ) {
             Text("Send Otp")
@@ -87,5 +88,5 @@ fun LoginScreen(navController: NavHostController) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(rememberNavController())
+    LoginScreen(hiltViewModel())
 }
