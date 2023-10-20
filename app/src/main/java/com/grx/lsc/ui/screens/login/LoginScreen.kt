@@ -23,11 +23,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.grx.lsc.R
+import com.grx.lsc.ui.navigation.AppScreens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen() {
+fun LoginScreen(navController: NavHostController) {
 
     Column(
         modifier = Modifier.padding(
@@ -72,7 +75,7 @@ fun LoginScreen() {
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
-            onClick = { /*TODO*/ },
+            onClick = { navController.navigate(AppScreens.LoginOtp.route) },
             shape = RoundedCornerShape(10.dp),
         ) {
             Text("Send Otp")
@@ -84,5 +87,5 @@ fun LoginScreen() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen()
+    LoginScreen(rememberNavController())
 }
