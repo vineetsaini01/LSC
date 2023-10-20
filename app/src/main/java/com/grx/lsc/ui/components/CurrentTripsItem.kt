@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
@@ -35,9 +34,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.grx.lsc.R
+import com.grx.lsc.ui.navigation.AppScreens
 
 @Composable
-fun CurrentTripsItem() {
+fun CurrentTripsItem(onPressedScanQRCode: () -> Unit) {
     var hasExpended by remember {
         mutableStateOf(false)
     }
@@ -202,14 +202,16 @@ fun CurrentTripsItem() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp),
-                    onClick = { },
+                    onClick = {
+                        onPressedScanQRCode()
+                    },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF00920F),
                         contentColor = Color.White
                     )
                 ) {
-                    Text("Accept")
+                    Text("Scan QR Code")
                 }
             }
 
@@ -241,8 +243,10 @@ fun SmallDetails(drawable: Int, text: String, modifier: Modifier = Modifier) {
 }
 
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun CurrentTripsItemPreview() {
-    CurrentTripsItem()
-}
+//@Preview(showBackground = true, showSystemUi = true)
+//@Composable
+//fun CurrentTripsItemPreview() {
+//    CurrentTripsItem {
+//        viewModel.navController.navigate(route = AppScreens.BoggieTrailer.route)
+//    }
+//}

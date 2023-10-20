@@ -1,4 +1,4 @@
-package com.grx.lsc.ui.screens.login
+package com.grx.lsc.ui.screens.auth.login
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

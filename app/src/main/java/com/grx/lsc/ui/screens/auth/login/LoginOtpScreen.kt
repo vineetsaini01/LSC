@@ -1,4 +1,4 @@
-package com.grx.lsc.ui.screens.login
+package com.grx.lsc.ui.screens.auth.login
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -23,27 +23,22 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.grx.lsc.R
 import com.grx.lsc.ui.components.OtpView
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginOtpScreen(viewModel: LoginViewModel) {
+fun LoginOtpScreen(viewModel: LoginViewModel, startHomeActivity: () -> Unit) {
+
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -114,7 +109,7 @@ fun LoginOtpScreen(viewModel: LoginViewModel) {
             Button(
                 modifier = Modifier
                     .fillMaxWidth(),
-                onClick =  viewModel::loginBtn,
+                onClick = { startHomeActivity() },
                 shape = RoundedCornerShape(10.dp),
             ) {
                 Text("Login")
@@ -122,10 +117,4 @@ fun LoginOtpScreen(viewModel: LoginViewModel) {
         }
     }
 
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LoginOtpScreenPreview() {
-    LoginOtpScreen(hiltViewModel())
 }

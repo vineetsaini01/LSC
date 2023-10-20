@@ -7,16 +7,15 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.grx.lsc.ui.screens.home.HomeScreen
-import com.grx.lsc.ui.screens.home.HomeViewModel
-import com.grx.lsc.ui.screens.login.LoginOtpScreen
-import com.grx.lsc.ui.screens.login.LoginScreen
-import com.grx.lsc.ui.screens.login.LoginViewModel
+import com.grx.lsc.ui.screens.auth.login.LoginOtpScreen
+import com.grx.lsc.ui.screens.auth.login.LoginScreen
+import com.grx.lsc.ui.screens.auth.login.LoginViewModel
 
 @Composable
 fun AppNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
+    startHomeActivity: () -> Unit,
 ) {
 
     val loginViewModel: LoginViewModel = hiltViewModel<LoginViewModel>().apply {
@@ -28,8 +27,9 @@ fun AppNavHost(
         startDestination = AppScreens.Login.route
     ) {
         loginNavGraph(loginViewModel)
-        loginOtpNavGraph(loginViewModel)
-        homeNavGraph(navController)
+        loginOtpNavGraph(loginViewModel){
+            startHomeActivity()
+        }
     }
 }
 
@@ -39,19 +39,13 @@ fun NavGraphBuilder.loginNavGraph(loginViewModel: LoginViewModel) {
     }
 }
 
-fun NavGraphBuilder.loginOtpNavGraph(loginViewModel: LoginViewModel) {
+fun NavGraphBuilder.loginOtpNavGraph(loginViewModel: LoginViewModel, startHomeActivity:()-> Unit) {
     composable(route = AppScreens.LoginOtp.route) {
-        LoginOtpScreen(viewModel = loginViewModel)
+        LoginOtpScreen(loginViewModel){
+            startHomeActivity()
+        }
     }
 }
 
-fun NavGraphBuilder.homeNavGraph(navController:NavHostController) {
-    composable(route = AppScreens.Home.route) {
-        val viewModel=hiltViewModel<HomeViewModel>().apply {
-            this.navController = navController
-        }
-        HomeScreen(viewModel = viewModel)
-    }
-}
 
 

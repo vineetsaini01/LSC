@@ -1,5 +1,6 @@
 package com.grx.lsc.activity
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -13,7 +14,7 @@ import com.grx.lsc.ui.theme.LscTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class AuthActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -24,9 +25,16 @@ class MainActivity : ComponentActivity() {
                 ) {
                     AppNavHost(
                         navController = rememberNavController()
-                    )
+                    ) { startHomeActivity() }
                 }
             }
         }
+    }
+
+    private fun startHomeActivity() {
+        startActivity(
+            Intent(this, HomeActivity::class.java)
+        )
+        finish()
     }
 }
