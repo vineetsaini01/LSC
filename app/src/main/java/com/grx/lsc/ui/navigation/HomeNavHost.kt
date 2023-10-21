@@ -8,8 +8,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.grx.lsc.ui.screens.boggie_trailer.BoggieTrailerScreen
+import com.grx.lsc.ui.screens.enter_details.EnterDetailsScreen
 import com.grx.lsc.ui.screens.home.HomeScreen
 import com.grx.lsc.ui.screens.home.HomeViewModel
+import com.grx.lsc.ui.screens.reached.ReachedScreen
 
 @Composable
 fun HomeNavHost(
@@ -23,6 +25,8 @@ fun HomeNavHost(
     ) {
         homeNavGraph(navController)
         boggieTrailerNavGraph(navController)
+        enterDetailsNavGraph(navController)
+        reachedNavGraph(navController)
     }
 }
 
@@ -37,6 +41,18 @@ fun NavGraphBuilder.homeNavGraph(navController: NavHostController) {
 fun NavGraphBuilder.boggieTrailerNavGraph(navController: NavHostController) {
     composable(route = AppScreens.BoggieTrailer.route) {
         BoggieTrailerScreen(navController)
+    }
+}
+
+fun NavGraphBuilder.enterDetailsNavGraph(navController: NavHostController) {
+    composable(route = AppScreens.EnterDetails.route) {
+        EnterDetailsScreen(navController)
+    }
+}
+
+fun NavGraphBuilder.reachedNavGraph(navController: NavHostController) {
+    composable(route = AppScreens.Reached.route) {
+        ReachedScreen(navController)
     }
 }
 

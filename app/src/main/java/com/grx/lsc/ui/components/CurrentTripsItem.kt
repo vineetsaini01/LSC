@@ -222,25 +222,7 @@ fun CurrentTripsItem(onPressedScanQRCode: () -> Unit) {
     }
 }
 
-@Composable
-fun SmallDetails(drawable: Int, text: String, modifier: Modifier = Modifier) {
-    Row(modifier = modifier) {
-        Image(
-            painter = painterResource(id = drawable),
-            contentDescription = "calendar_date"
-        )
-        Text(
-            text = text,
-            modifier = Modifier.padding(start = 10.dp),
-            style = TextStyle(
-                fontSize = 14.sp,
-                lineHeight = 22.sp,
-                fontWeight = FontWeight(500),
-                color = Color(0xFF343434),
-            )
-        )
-    }
-}
+
 
 
 //@Preview(showBackground = true, showSystemUi = true)

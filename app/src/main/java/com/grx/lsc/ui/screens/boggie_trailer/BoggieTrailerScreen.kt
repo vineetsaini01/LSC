@@ -1,6 +1,8 @@
 package com.grx.lsc.ui.screens.boggie_trailer
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +18,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -23,17 +26,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.grx.lsc.R
+import com.grx.lsc.ui.components.AlertDialogWrapper
+import com.grx.lsc.ui.components.AlertDialogWrapperWithTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BoggieTrailerScreen(navController: NavHostController) {
+fun BoggieTrailerScreen(
+    navController: NavHostController,
+    viewModel: BoggieTrailerViewModel = hiltViewModel(),
+) {
+    LaunchedEffect(Unit){
+        viewModel.navController=navController
+    }
     var tabIndex by remember { mutableIntStateOf(0) }
 
     val tabs = listOf("Boggie No", "Trailer NO")
@@ -45,7 +59,7 @@ fun BoggieTrailerScreen(navController: NavHostController) {
                 Button(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    onClick = { },
+                    onClick = viewModel::onClickConfirm,
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF00920F),
@@ -90,13 +104,82 @@ fun BoggieTrailerScreen(navController: NavHostController) {
                 1 -> BoggieTrailerInnerView("Trailer Number #1536232")
             }
 
+            if (viewModel.openDialog) {
+
+                AlertDialogWrapperWithTopBar(
+                    title = "Confirmed",
+                    onDismissRequest = {
+                        viewModel.openDialog = false
+                    }
+                ) {
+                    Column {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "Vehicle Number is MP 09 KC 0545",
+                            style = TextStyle(
+                                fontSize = 17.sp,
+                                lineHeight = 29.67.sp,
+                                fontWeight = FontWeight(500),
+                                color = Color(0xFF000000),
+                                textAlign = TextAlign.Center,
+                                letterSpacing = 0.34.sp,
+                            )
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Button(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            onClick = { viewModel.openDialog = false },
+                            shape = RoundedCornerShape(10.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF00920F),
+                                contentColor = Color.White
+                            )
+                        ) {
+                            Text("Yes, Confirm")
+                        }
+                    }
+                }
+            }
+
+            if (viewModel.openDialog2) {
+                AlertDialogWrapper(
+                    onDismissRequest = {}
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        Image(
+                            painter = painterResource(id = R.drawable.right_done),
+                            contentDescription = ""
+                        )
+
+                        Text(
+                            text = "Your Trip Has Been Started",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                lineHeight = 19.sp,
+                                fontWeight = FontWeight(500),
+                                color = Color(0xFF282D40),
+                                textAlign = TextAlign.Center,
+                            )
+                        )
+
+                    }
+
+
+                }
+            }
+
         }
     }
 
 }
 
 @Composable
-fun BoggieTrailerInnerView(text:String) {
+fun BoggieTrailerInnerView(text: String) {
     Box(
         Modifier
             .fillMaxWidth()
@@ -105,7 +188,7 @@ fun BoggieTrailerInnerView(text:String) {
         contentAlignment = Alignment.CenterStart
     ) {
 
-        Column (modifier = Modifier.padding(16.dp)){
+        Column(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = text,
                 style = TextStyle(
@@ -116,7 +199,7 @@ fun BoggieTrailerInnerView(text:String) {
                     letterSpacing = 0.28.sp,
                 )
             )
-            
+
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(

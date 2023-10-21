@@ -10,9 +10,10 @@ import androidx.navigation.compose.composable
 import com.grx.lsc.ui.screens.auth.login.LoginOtpScreen
 import com.grx.lsc.ui.screens.auth.login.LoginScreen
 import com.grx.lsc.ui.screens.auth.login.LoginViewModel
+import com.grx.lsc.ui.screens.landing.LandingScreen
 
 @Composable
-fun AppNavHost(
+fun AuthNavHost(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     startHomeActivity: () -> Unit,
@@ -24,12 +25,19 @@ fun AppNavHost(
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = AppScreens.Login.route
+        startDestination = AppScreens.Landing.route
     ) {
+        landingNavGraph(navController)
         loginNavGraph(loginViewModel)
         loginOtpNavGraph(loginViewModel){
             startHomeActivity()
         }
+    }
+}
+
+fun NavGraphBuilder.landingNavGraph(navController: NavHostController) {
+    composable(route = AppScreens.Landing.route) {
+        LandingScreen(navController)
     }
 }
 
