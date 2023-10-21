@@ -43,7 +43,6 @@ fun CurrentTripsItem(onPressedScanQRCode: () -> Unit) {
     }
     Box(
         modifier = Modifier
-            .padding(16.dp)
             .border(
                 width = 1.dp,
                 color = Color.LightGray,

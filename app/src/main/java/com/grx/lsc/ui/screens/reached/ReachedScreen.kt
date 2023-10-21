@@ -13,13 +13,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,6 +34,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -42,14 +49,20 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.grx.lsc.R
 import com.grx.lsc.ui.components.AlertDialogWrapper
+import com.grx.lsc.ui.components.AlertDialogWrapperWithTopBar
 import com.grx.lsc.ui.components.BorderButton
 import com.grx.lsc.ui.components.RoundedButton
 import com.grx.lsc.ui.components.SmallDetails
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReachedScreen(navController: NavHostController) {
 
     var openDialog by remember {
+        mutableStateOf(false)
+    }
+
+    var openDialog2 by remember {
         mutableStateOf(false)
     }
     var isLoading by remember {
@@ -178,7 +191,9 @@ fun ReachedScreen(navController: NavHostController) {
                                 .weight(1f)
                                 .fillMaxWidth(),
                             title = "Delay",
-                            onClick = { },
+                            onClick = {
+                                      openDialog2=true
+                            },
                             borderColor = Color(0xFFF60000)
                         )
 
@@ -270,8 +285,32 @@ fun ReachedScreen(navController: NavHostController) {
                             }
 
                         }
+                    }
+                }
 
+                if(openDialog2){
+                    AlertDialogWrapperWithTopBar(
+                        title = "Select Delay Reason",
+                        onDismissRequest = { openDialog = false },
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
+                            RadioButtonSample()
+
+                            OutlinedTextField(
+                                modifier = Modifier.fillMaxWidth(),
+                                value = "",
+                                onValueChange = {  },
+                                label = { Text("Enter Text here") }
+                            )
+
+                            BorderButton(
+                                modifier = Modifier.fillMaxWidth(),
+                                title = "Done",
+                                borderColor = Color(0xFF0C831F),
+                                onClick = { openDialog2=false }
+                            )
+                        }
                     }
                 }
 
@@ -283,3 +322,39 @@ fun ReachedScreen(navController: NavHostController) {
     }
 
 }
+
+@Composable
+fun RadioButtonSample() {
+    val radioOptions = listOf("Container not received", "Traffic jam", "Vehicle breakdown","Tire puncture","Other")
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[1] ) }
+    Column {
+        radioOptions.forEach { text ->
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .selectable(
+                        selected = (text == selectedOption),
+                        onClick = {
+                            onOptionSelected(text)
+                        }
+                    )
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = CenterVertically
+            ) {
+                RadioButton(
+                    selected = (text == selectedOption),
+                    onClick = { onOptionSelected(text) },
+                    colors = RadioButtonDefaults.colors(
+                        selectedColor = Color(0xFF0C831F),
+                        unselectedColor = Color.LightGray,
+                    )
+                )
+                Text(
+                    text = text,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+        }
+    }
+}
+
