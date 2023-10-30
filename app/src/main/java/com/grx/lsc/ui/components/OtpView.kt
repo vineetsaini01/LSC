@@ -18,42 +18,55 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun OtpView(otpValue: String, onValueChange: (String) -> Unit) {
-    BasicTextField(
-        modifier = Modifier
-            .border(1.dp, Color.Gray, RoundedCornerShape(8.dp)),
-        value = otpValue,
-        onValueChange = onValueChange,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
-        textStyle = MaterialTheme.typography.bodyMedium,
-        visualTransformation = VisualTransformation.None,
-        decorationBox = { innerTextField ->
-            Row(horizontalArrangement = Arrangement.Center) {
-                repeat(6) { index ->
-                    val char = otpValue.getOrNull(index)?.toString() ?: ""
-                    Box (modifier = Modifier
-                        .width(48.dp)
-                        .height(48.dp),
-                        contentAlignment = Alignment.Center
-                        ){
-                        Text(
-                            text = char,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                    if(index!=5){
+fun OtpView(
+    otpValue: String,
+    onValueChange: (String) -> Unit,
+    errorMessage: String? = null,
+    isError: Boolean = !errorMessage.isNullOrEmpty(),
+    borderColor: Color = if (isError) Color.Red else Color.LightGray,
+) {
+    Column {
+        BasicTextField(
+            modifier = Modifier
+                .border(1.dp,  borderColor, RoundedCornerShape(8.dp)),
+            value = otpValue,
+            onValueChange = onValueChange,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+            textStyle = MaterialTheme.typography.bodyMedium,
+            visualTransformation = VisualTransformation.None,
+            decorationBox = { innerTextField ->
+                Row(horizontalArrangement = Arrangement.Center) {
+                    repeat(6) { index ->
+                        val char = otpValue.getOrNull(index)?.toString() ?: ""
                         Box(
                             modifier = Modifier
-                                .width(1.dp)
-                                .height(48.dp)
-                                .background(color = Color.Gray)
-                                .padding(2.dp),
-                        )
+                                .width(48.dp)
+                                .height(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = char,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = borderColor,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                        if (index != 5) {
+                            Box(
+                                modifier = Modifier
+                                    .width(1.dp)
+                                    .height(48.dp)
+                                    .background(color = borderColor)
+                                    .padding(2.dp),
+                            )
+                        }
                     }
                 }
             }
+        )
+        if (!errorMessage.isNullOrBlank()) {
+            Spacer(modifier = Modifier.height(6.dp))
+            Text(text = errorMessage, color = Color.Red)
         }
-    )
+    }
 }

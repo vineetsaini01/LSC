@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,12 +22,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.grx.lsc.R
-import com.grx.lsc.ui.navigation.AppScreens
+import com.grx.lsc.ui.components.CustomTextField
+import com.grx.lsc.ui.components.Loading
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
 
@@ -53,12 +49,22 @@ fun LoginScreen(viewModel: LoginViewModel) {
 
         Text(text = "Log in ")
 
-        OutlinedTextField(
-            modifier = Modifier.fillMaxWidth(),
+//        OutlinedTextField(
+//            modifier = Modifier.fillMaxWidth(),
+//            value = viewModel.mobileN0,
+//            leadingIcon = {Text("+91")},
+//            onValueChange = { viewModel.mobileN0=it },
+//            label = { Text("Mobile No") }
+//        )
+
+        CustomTextField(
             value = viewModel.mobileN0,
-            leadingIcon = {Text("+91")},
-            onValueChange = { viewModel.mobileN0=it },
-            label = { Text("Mobile No") }
+            leadingIcon = { Text("+91") },
+            onValueChange = {
+                viewModel.onEvent(LoginEvent.OnChangedMobileNumber(it))
+            },
+            errorMessage = viewModel.mobileError,
+            label = "Mobile No"
         )
 
         Text(
@@ -67,8 +73,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
                 withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
                     append("Terms of Service Privacy policy Content Policy")
                 }
-            }
-            ,
+            },
             fontSize = 12.sp,
             textAlign = TextAlign.Center
         )
@@ -76,12 +81,14 @@ fun LoginScreen(viewModel: LoginViewModel) {
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
-            onClick = viewModel::sendOtp,
+            onClick = { viewModel.onEvent(LoginEvent.SendOtp) },
             shape = RoundedCornerShape(10.dp),
         ) {
             Text("Send Otp")
         }
     }
+
+    Loading(isLoading = viewModel.isLoading)
 
 }
 

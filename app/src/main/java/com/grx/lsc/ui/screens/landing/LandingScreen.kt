@@ -25,7 +25,8 @@ import androidx.navigation.NavHostController
 import com.grx.lsc.R
 import com.grx.lsc.ui.components.AlertDialogWrapperWithTopBar
 import com.grx.lsc.ui.components.RoundedButton
-import com.grx.lsc.ui.navigation.AppScreens
+import com.grx.lsc.ui.navigation.AppDestination
+import com.grx.lsc.ui.navigation.AppRoute
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,14 +58,14 @@ fun LandingScreen(navController: NavHostController) {
                     OutlinedTextField(
                         modifier = Modifier.fillMaxWidth(),
                         value = trackingID,
-                        onValueChange = { trackingID=it },
+                        onValueChange = { trackingID = it },
                         label = { Text("Tracking ID") }
                     )
 
                     RoundedButton(
                         modifier = Modifier.fillMaxWidth(),
                         title = "Track Shipment",
-                        onClick = { openDialog=false }
+                        onClick = { openDialog = false }
                     )
                 }
             }
@@ -88,7 +89,7 @@ fun LandingScreen(navController: NavHostController) {
             RoundedButton(
                 modifier = Modifier.fillMaxWidth(),
                 title = "Track Your Shipment",
-                onClick = { openDialog=true }
+                onClick = { openDialog = true }
             )
 
             Spacer(modifier = Modifier.heightIn(10.dp))
@@ -96,7 +97,7 @@ fun LandingScreen(navController: NavHostController) {
             RoundedButton(
                 modifier = Modifier.fillMaxWidth(),
                 title = "Log In",
-                onClick = { navController.navigate(AppScreens.Login.route) }
+                onClick = { navController.navigate(AppDestination.Login.route) }
             )
 
         }

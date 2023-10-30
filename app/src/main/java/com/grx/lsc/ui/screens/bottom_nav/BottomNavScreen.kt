@@ -1,4 +1,4 @@
-package com.grx.lsc.ui.screens.home
+package com.grx.lsc.ui.screens.bottom_nav
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -24,17 +24,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.grx.lsc.R
-import com.grx.lsc.ui.navigation.HomeNavHost
+import com.grx.lsc.ui.navigation.BottomNavHost
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeActivityRootScreen() {
+fun BottomNavScreen(appNavController: NavHostController) {
     Scaffold(
         topBar = {
+
             TopAppBar(
                 title = {},
 
@@ -71,7 +72,10 @@ fun HomeActivityRootScreen() {
 
         ) {
         Box(modifier = Modifier.padding(it)) {
-            HomeNavHost(rememberNavController())
+            BottomNavHost(
+                appNavController = appNavController,
+                bottomNavController = rememberNavController()
+            )
         }
 
     }

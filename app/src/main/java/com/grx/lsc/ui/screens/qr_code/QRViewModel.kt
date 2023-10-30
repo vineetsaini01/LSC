@@ -1,11 +1,9 @@
-package com.grx.lsc.ui.screens.enter_details
+package com.grx.lsc.ui.screens.qr_code
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
 import com.grx.lsc.core.base_view_model.BaseViewModel
 import com.grx.lsc.domain.repository.Repository
 import com.grx.lsc.utils.Resource
@@ -17,34 +15,27 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EnterDetailsViewModel @Inject constructor(private val repository: Repository) :
-    BaseViewModel<EnterDetailsEvent>() {
+class QRViewModel @Inject constructor(
+    private val repository: Repository,
+) : BaseViewModel<QREvent>() {
 
-    lateinit var navController: NavHostController
     var isLoading by mutableStateOf(false)
-
-    var containerNo by mutableStateOf("")
-    var sealNo by mutableStateOf("")
-
-
-    override fun onEvent(event: EnterDetailsEvent) {
+    override fun onEvent(event: QREvent) {
         event.apply {
             when (this) {
-                EnterDetailsEvent.OnPressedDone -> {
-                    driverJobStore()
+                QREvent.UploadVehicleNumber -> {
+                    uploadVehicleNumber()
                 }
             }
         }
     }
 
-    private fun driverJobStore() {
+    private fun uploadVehicleNumber() {
         viewModelScope.launch(Dispatchers.IO) {
 
-            repository.driverJobStore(
-                id = "",
-                containerNo = containerNo,
-                imagesVideos = "",
-                sealNo = sealNo
+            repository.uploadVehicleNumber(
+                vehicleNumber = "",
+                id = ""
             )
                 .onEach { resource ->
                     when (resource) {
@@ -65,6 +56,5 @@ class EnterDetailsViewModel @Inject constructor(private val repository: Reposito
         }
 
     }
-
 
 }

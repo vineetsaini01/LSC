@@ -25,7 +25,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -36,16 +35,14 @@ import com.grx.lsc.ui.components.OtpView
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginOtpScreen(viewModel: LoginViewModel, startHomeActivity: () -> Unit) {
-
-    val context = LocalContext.current
+fun LoginOtpScreen(viewModel: LoginViewModel) {
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = viewModel::backPress) {
+                        IconButton(onClick = { viewModel.onEvent(LoginEvent.OnBackPress) }) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = Icons.Default.KeyboardArrowLeft,
@@ -83,8 +80,11 @@ fun LoginOtpScreen(viewModel: LoginViewModel, startHomeActivity: () -> Unit) {
             )
 
             OtpView(
-                onValueChange = { viewModel.mobileOtp = it },
-                otpValue = viewModel.mobileOtp
+                onValueChange = {
+                    viewModel.onEvent(LoginEvent.OnChangedMobileOTP(it))
+                },
+                otpValue = viewModel.mobileOtp,
+                errorMessage = viewModel.mobileOTPError
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -109,7 +109,9 @@ fun LoginOtpScreen(viewModel: LoginViewModel, startHomeActivity: () -> Unit) {
             Button(
                 modifier = Modifier
                     .fillMaxWidth(),
-                onClick = { startHomeActivity() },
+                onClick = {
+                    viewModel.onEvent(LoginEvent.VerifyCode)
+                },
                 shape = RoundedCornerShape(10.dp),
             ) {
                 Text("Login")

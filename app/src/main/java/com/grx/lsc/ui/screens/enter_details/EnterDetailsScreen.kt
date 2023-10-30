@@ -40,8 +40,8 @@ fun EnterDetailsScreen(
     navController: NavHostController,
     viewModel: EnterDetailsViewModel = hiltViewModel(),
 ) {
-    LaunchedEffect(Unit){
-        viewModel.navController=navController
+    LaunchedEffect(Unit) {
+        viewModel.navController = navController
     }
 
     Column(
@@ -96,7 +96,7 @@ fun EnterDetailsScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp), // You can adjust the padding as needed
-                onClick = { viewModel.onPressedDone()},
+                onClick = { viewModel.onEvent(EnterDetailsEvent.OnPressedDone) },
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF00920F),

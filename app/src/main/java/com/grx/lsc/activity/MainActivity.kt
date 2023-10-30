@@ -7,13 +7,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.grx.lsc.ui.screens.home.HomeActivityRootScreen
+import androidx.navigation.compose.rememberNavController
+import com.grx.lsc.ui.navigation.AppNavHost
 import com.grx.lsc.ui.theme.LscTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HomeActivity : ComponentActivity() {
+class MainActivity : ComponentActivity() {
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         setContent {
             LscTheme {
@@ -21,9 +25,11 @@ class HomeActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeActivityRootScreen()
+                    AppNavHost(appNavController = rememberNavController())
                 }
             }
         }
     }
+
 }
+
