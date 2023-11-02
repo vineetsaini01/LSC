@@ -42,12 +42,9 @@ import com.grx.lsc.ui.components.AlertDialogWrapperWithTopBar
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoggieTrailerScreen(
-    navController: NavHostController,
-    viewModel: BoggieTrailerViewModel = hiltViewModel(),
+    viewModel: BoggieTrailerViewModel,
 ) {
-    LaunchedEffect(Unit){
-        viewModel.navController=navController
-    }
+
     var tabIndex by remember { mutableIntStateOf(0) }
 
     val tabs = listOf("Boggie No", "Trailer NO")
@@ -59,7 +56,7 @@ fun BoggieTrailerScreen(
                 Button(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    onClick = viewModel::onClickConfirm,
+                    onClick = { viewModel.onEvent(BoggieTrailerEvent.OnPressedYesConfirmBtn) },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF00920F),
@@ -100,47 +97,11 @@ fun BoggieTrailerScreen(
             }
             Spacer(modifier = Modifier.height(10.dp))
             when (tabIndex) {
-                0 -> BoggieTrailerInnerView("Boggie Number: #16565AB")
-                1 -> BoggieTrailerInnerView("Trailer Number #1536232")
+                0 -> BoggieTrailerInnerView("Boggie Number: #${viewModel.driverJobDetailsRes?.data?.boggie_number}")
+                1 -> BoggieTrailerInnerView("Trailer Number #${viewModel.driverJobDetailsRes?.data?.trailer_number}")
             }
 
-            if (viewModel.openDialog) {
 
-                AlertDialogWrapperWithTopBar(
-                    title = "Confirmed",
-                    onDismissRequest = {
-                        viewModel.openDialog = false
-                    }
-                ) {
-                    Column {
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = "Vehicle Number is MP 09 KC 0545",
-                            style = TextStyle(
-                                fontSize = 17.sp,
-                                lineHeight = 29.67.sp,
-                                fontWeight = FontWeight(500),
-                                color = Color(0xFF000000),
-                                textAlign = TextAlign.Center,
-                                letterSpacing = 0.34.sp,
-                            )
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Button(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            onClick = { viewModel.openDialog = false },
-                            shape = RoundedCornerShape(10.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color(0xFF00920F),
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Text("Yes, Confirm")
-                        }
-                    }
-                }
-            }
 
             if (viewModel.openDialog2) {
                 AlertDialogWrapper(
@@ -168,8 +129,6 @@ fun BoggieTrailerScreen(
                         )
 
                     }
-
-
                 }
             }
 

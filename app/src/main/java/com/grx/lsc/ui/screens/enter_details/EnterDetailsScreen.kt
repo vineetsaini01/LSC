@@ -36,13 +36,8 @@ import com.grx.lsc.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnterDetailsScreen(
-    navController: NavHostController,
-    viewModel: EnterDetailsViewModel = hiltViewModel(),
-) {
-    LaunchedEffect(Unit) {
-        viewModel.navController = navController
-    }
+fun EnterDetailsScreen(viewModel: EnterDetailsViewModel) {
+
 
     Column(
         modifier = Modifier

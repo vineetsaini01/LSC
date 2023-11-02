@@ -2,7 +2,6 @@ package com.grx.lsc.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
@@ -11,54 +10,49 @@ import com.grx.lsc.ui.screens.auth.login.LoginScreen
 import com.grx.lsc.ui.screens.auth.login.LoginViewModel
 import com.grx.lsc.ui.screens.bottom_nav.BottomNavScreen
 import com.grx.lsc.ui.screens.landing.LandingScreen
-import com.grx.lsc.ui.screens.qr_code.QRScannerScreen
 import com.grx.lsc.ui.screens.splash.SplashScreen
 import com.grx.lsc.ui.screens.splash.SplashViewModel
-
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
-    appNavController: NavHostController,
+    appNavigator: AppNavigator,
 ) {
+
     NavHost(
         modifier = modifier,
-        navController = appNavController,
-        startDestination = AppDestination.Splash.route,
+        navController = appNavigator.navController,
+        startDestination = AppRoute.Splash.route,
     ) {
 
-        composable(AppDestination.Splash.route) {
-            it.sharedViewModel<SplashViewModel>(appNavController).apply {
-                this.appNavController = appNavController
-            }
+        composable(AppRoute.Splash.route) {
+            it.sharedViewModel<SplashViewModel>(appNavigator.navController)
             SplashScreen()
         }
 
         navigation(
-            startDestination = AppDestination.Landing.route,
+            startDestination = AppRoute.Landing.route,
             route = AppRoute.AuthRoute.route
         ) {
-            composable(AppDestination.Landing.route) {
-                LandingScreen(appNavController)
+            composable(AppRoute.Landing.route) {
+                LandingScreen(appNavigator)
             }
-            composable(AppDestination.Login.route) {
-                val viewModel = it.sharedViewModel<LoginViewModel>(appNavController)
-                viewModel.navController = appNavController
+            composable(AppRoute.Login.route) {
+                val viewModel = it.sharedViewModel<LoginViewModel>(appNavigator.navController)
                 LoginScreen(viewModel = viewModel)
             }
-            composable(AppDestination.LoginOtp.route) {
-                val viewModel = it.sharedViewModel<LoginViewModel>(appNavController)
+            composable(AppRoute.LoginOtp.route) {
+                val viewModel = it.sharedViewModel<LoginViewModel>(appNavigator.navController)
                 LoginOtpScreen(viewModel = viewModel)
             }
         }
 
         navigation(
-            startDestination = AppDestination.BottomNav.route,
+            startDestination = AppRoute.BottomNav.route,
             route = AppRoute.BottomNavRoute.route
         ) {
-            composable(AppDestination.BottomNav.route) {
-                BottomNavScreen(appNavController = appNavController)
+            composable(AppRoute.BottomNav.route) {
+                BottomNavScreen()
             }
-
         }
     }
 }

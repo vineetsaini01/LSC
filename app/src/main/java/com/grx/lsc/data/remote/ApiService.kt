@@ -38,6 +38,7 @@ interface ApiService {
     @FormUrlEncoded
     @POST("driver-get-vehicle-number")
     suspend fun uploadVehicleNumber(
+        @Header("Authorization") token: String,
         @Field("vehicle_number") vehicleNumber: String,
         @Field("id") id: String,
     ): JobStatusResDTO

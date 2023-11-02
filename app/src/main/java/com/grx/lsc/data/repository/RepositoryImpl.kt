@@ -97,10 +97,11 @@ class RepositoryImpl @Inject constructor(
     override suspend fun uploadVehicleNumber(
         vehicleNumber: String,
         id: String,
+        token: String,
     ): Flow<Resource<JobStatusRes?>> = flow {
         emit(Resource.Loading())
         val remoteData = try {
-            apiHelper.uploadVehicleNumber(vehicleNumber = vehicleNumber, id = id)
+            apiHelper.uploadVehicleNumber(vehicleNumber = vehicleNumber, id = id,token=token)
         } catch (e: HttpException) {
             emit(Resource.Error(message = "An unexpected error occurred"))
             null

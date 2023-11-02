@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import com.grx.lsc.core.base_view_model.BaseViewModel
+import com.grx.lsc.domain.models.DriverJobDetailsRes
 import com.grx.lsc.domain.repository.Repository
 import com.grx.lsc.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,11 +21,11 @@ import javax.inject.Inject
 class EnterDetailsViewModel @Inject constructor(private val repository: Repository) :
     BaseViewModel<EnterDetailsEvent>() {
 
-    lateinit var navController: NavHostController
     var isLoading by mutableStateOf(false)
 
     var containerNo by mutableStateOf("")
     var sealNo by mutableStateOf("")
+    var driverJobDetailsRes: DriverJobDetailsRes? = null
 
 
     override fun onEvent(event: EnterDetailsEvent) {

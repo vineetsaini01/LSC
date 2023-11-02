@@ -10,6 +10,7 @@ import android.util.Size
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
@@ -20,15 +21,24 @@ import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,23 +57,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.navigation.NavController
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.grx.lsc.R
 import com.grx.lsc.core.scanner.BarCodeAnalyser
+import com.grx.lsc.ui.components.AlertDialogWrapper
+import com.grx.lsc.ui.components.AlertDialogWrapperWithTopBar
+import com.grx.lsc.ui.components.Loading
 import com.grx.lsc.ui.components.RoundedButton
-import com.grx.lsc.ui.navigation.AppDestination
+import com.grx.lsc.ui.screens.bottom_nav.BottomViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @OptIn(ExperimentalGetImage::class)
 @Composable
-fun QRScannerScreen() {
-    var code by remember {
-        mutableStateOf("")
-    }
+fun QRScannerScreen(
+    viewModel: QRViewModel = hiltViewModel(),
+) {
+
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val cameraProvideFuture = remember {
@@ -91,7 +110,7 @@ fun QRScannerScreen() {
 
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { }) {
+                        IconButton(onClick = { viewModel.onEvent(QREvent.OnBackPressed) }) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = Icons.Default.KeyboardArrowLeft,
@@ -111,7 +130,7 @@ fun QRScannerScreen() {
                 modifier = Modifier.fillMaxWidth(),
                 title = "Scan QR Code",
                 onClick = {
-
+                    viewModel.onEvent(QREvent.ScanQRCode)
                 })
         }) {
 
@@ -146,7 +165,7 @@ fun QRScannerScreen() {
                         imageAnalysis.setAnalyzer(
                             ContextCompat.getMainExecutor(context),
                             BarCodeAnalyser {
-                                code = it
+                                viewModel.code = it
                             }
                         )
                         try {
@@ -165,7 +184,58 @@ fun QRScannerScreen() {
                     },
 
                     )
-                Toast.makeText(context, code, Toast.LENGTH_SHORT).show()
+                if(viewModel.code.isNotBlank()){
+                    AlertDialogWrapperWithTopBar(
+                        title = "Confirmed",
+                        onDismissRequest = {
+                            viewModel.code=""
+                        }
+                    ) {
+                        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            if (viewModel.isLoading) {
+                                CircularProgressIndicator(
+                                    strokeWidth = 2.dp,
+                                    modifier = Modifier.size(60.dp)
+                                )
+                            }
+                            if (viewModel.success) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.right_done),
+                                    contentDescription = ""
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = "Vehicle Number is MP 09 KC 0545",
+                                style = TextStyle(
+                                    fontSize = 17.sp,
+                                    lineHeight = 29.67.sp,
+                                    fontWeight = FontWeight(500),
+                                    color = Color(0xFF000000),
+                                    textAlign = TextAlign.Center,
+                                    letterSpacing = 0.34.sp,
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Button(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                onClick = { viewModel.onEvent(QREvent.UploadVehicleNumber)},
+                                shape = RoundedCornerShape(10.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFF00920F),
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Text("Yes, Confirm")
+                            }
+                        }
+                    }
+                }
+
+                //Toast.makeText(context, code, Toast.LENGTH_SHORT).show()
 
             }
         }

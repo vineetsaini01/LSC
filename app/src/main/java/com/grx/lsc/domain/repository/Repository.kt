@@ -26,7 +26,9 @@ interface Repository {
     suspend fun uploadVehicleNumber(
         vehicleNumber: String,
         id: String,
+        token: String,
     ): Flow<Resource<JobStatusRes?>>
+
     suspend fun driverJobStore(
         sealNo: String,
         id: String,

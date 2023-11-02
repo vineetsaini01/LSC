@@ -41,6 +41,7 @@ import com.grx.lsc.ui.screens.home.HomeViewModel
 @Composable
 fun CurrentTripsScreen(viewModel: HomeViewModel) {
 
+
     viewModel.driverJobDetailsRes?.data?.let { data ->
         Box(
             modifier = Modifier

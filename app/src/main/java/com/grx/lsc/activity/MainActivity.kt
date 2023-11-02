@@ -9,15 +9,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.grx.lsc.ui.navigation.AppNavHost
+import com.grx.lsc.ui.navigation.AppNavigator
 import com.grx.lsc.ui.theme.LscTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-
+    @Inject
+    lateinit var appNavigator: AppNavigator
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContent {
             LscTheme {
@@ -25,7 +27,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppNavHost(appNavController = rememberNavController())
+                    appNavigator.SetNavController()
+                    AppNavHost(
+                        appNavigator = appNavigator
+                    )
                 }
             }
         }

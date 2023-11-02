@@ -1,23 +1,18 @@
 package com.grx.lsc.ui.screens.home
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.Composable
+
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
 import com.grx.lsc.core.base_view_model.BaseViewModel
 import com.grx.lsc.domain.models.DriverJobDetailsRes
 import com.grx.lsc.domain.repository.Repository
 import com.grx.lsc.domain.use_case.shared_pref.GetTokenUseCase
 import com.grx.lsc.domain.use_case.shared_pref.LogoutUseCase
-import com.grx.lsc.ui.navigation.AppDestination
+import com.grx.lsc.ui.navigation.AppNavigator
 import com.grx.lsc.ui.navigation.AppRoute
+import com.grx.lsc.ui.navigation.BottomNavigator
 import com.grx.lsc.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -40,14 +35,15 @@ class HomeViewModel @Inject constructor(
     private val repository: Repository,
     private val getTokenUseCase: GetTokenUseCase,
     private val logoutUseCase: LogoutUseCase,
+    private val appNavigator: AppNavigator,
+    private val bottomNavigator: BottomNavigator,
 ) : BaseViewModel<HomeEvent>() {
 
-    lateinit var appNavController: NavHostController
-    lateinit var homeNavController: NavHostController
 
     var isLoading by mutableStateOf(false)
     var hasExpended by mutableStateOf(false)
     var driverJobDetailsRes by mutableStateOf<DriverJobDetailsRes?>(null)
+
 
     init {
         driverJobDetails()
@@ -67,8 +63,7 @@ class HomeViewModel @Inject constructor(
                 }
 
                 is HomeEvent.OnPressedQrCode -> {
-
-                   // goto QRCodescreen get data through call back
+                    bottomNavigator.navController.navigate(AppRoute.QRCode.route)
                 }
             }
         }
@@ -161,11 +156,11 @@ class HomeViewModel @Inject constructor(
                                 hasExpended = true
                             } else {
                                 logoutUseCase()
-                                appNavController.popBackStack(
+                                appNavigator.navController.popBackStack(
                                     route = AppRoute.BottomNavRoute.route,
                                     inclusive = true
                                 )
-                                appNavController.navigate(AppRoute.AuthRoute.route)
+                                appNavigator.navController.navigate(AppRoute.AuthRoute.route)
                             }
                         }
                     }

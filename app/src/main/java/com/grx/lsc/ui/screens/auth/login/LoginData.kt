@@ -1,5 +1,6 @@
 package com.grx.lsc.ui.screens.auth.login
 
+
 sealed class LoginEvent {
     data class OnChangedMobileNumber(val newMobileNo: String) : LoginEvent()
     data class OnChangedMobileOTP(val newMobileOTP: String) : LoginEvent()
@@ -7,3 +8,11 @@ sealed class LoginEvent {
     object VerifyCode : LoginEvent()
     object OnBackPress : LoginEvent()
 }
+
+data class LoginState(
+    val mobileNo: String?,
+    val mobileOtp: String?,
+    val mobileError: String?,
+    val mobileOTPError: String?,
+    val isLoading: Boolean?,
+)

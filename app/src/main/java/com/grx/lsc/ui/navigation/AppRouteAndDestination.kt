@@ -4,9 +4,7 @@ sealed class AppRoute(val route: String) {
     object AuthRoute : AppRoute("auth_route")
     object BottomNavRoute : AppRoute("bottom_nav_route")
     object HomeRoute : AppRoute("home_route")
-}
 
-sealed class AppDestination(val route: String) {
     object Splash : AppRoute("splash")
     object Landing : AppRoute("landing")
     object Login : AppRoute("login")
@@ -18,4 +16,6 @@ sealed class AppDestination(val route: String) {
     object Reached : AppRoute("reached")
     object QRCode : AppRoute("qr_code")
 }
+
+
 
