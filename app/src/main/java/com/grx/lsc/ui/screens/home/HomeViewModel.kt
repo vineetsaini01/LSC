@@ -1,5 +1,11 @@
 package com.grx.lsc.ui.screens.home
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -10,6 +16,7 @@ import com.grx.lsc.domain.models.DriverJobDetailsRes
 import com.grx.lsc.domain.repository.Repository
 import com.grx.lsc.domain.use_case.shared_pref.GetTokenUseCase
 import com.grx.lsc.domain.use_case.shared_pref.LogoutUseCase
+import com.grx.lsc.ui.navigation.AppDestination
 import com.grx.lsc.ui.navigation.AppRoute
 import com.grx.lsc.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,7 +47,7 @@ class HomeViewModel @Inject constructor(
 
     var isLoading by mutableStateOf(false)
     var hasExpended by mutableStateOf(false)
-    var driverJobDetailsRes: DriverJobDetailsRes? = null
+    var driverJobDetailsRes by mutableStateOf<DriverJobDetailsRes?>(null)
 
     init {
         driverJobDetails()
@@ -50,13 +57,18 @@ class HomeViewModel @Inject constructor(
         event.apply {
             when (this) {
                 is HomeEvent.OnPressedAcceptOrReject -> {
-                    driverJobDetails(status = status)
+                    drierJobStatus(status = status)
                 }
 
                 is HomeEvent.OnPressedDocDownload -> {
                     val link = driverJobDetailsRes?.data?.doc!!
                     val destination = File("/path/to/destination/filename.pdf")
                     downloadFile(link, destination)
+                }
+
+                is HomeEvent.OnPressedQrCode -> {
+
+                   // goto QRCodescreen get data through call back
                 }
             }
         }
@@ -133,7 +145,7 @@ class HomeViewModel @Inject constructor(
 
     }
 
-    private fun driverJobDetails(status: String) {
+    private fun drierJobStatus(status: String) {
         viewModelScope.launch(Dispatchers.IO) {
 
             repository.drierJobStatus(

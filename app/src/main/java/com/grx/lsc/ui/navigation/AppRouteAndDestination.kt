@@ -16,5 +16,6 @@ sealed class AppDestination(val route: String) {
     object BoggieTrailer : AppRoute("boggie_trailer")
     object EnterDetails : AppRoute("enter_details")
     object Reached : AppRoute("reached")
+    object QRCode : AppRoute("qr_code")
 }
 

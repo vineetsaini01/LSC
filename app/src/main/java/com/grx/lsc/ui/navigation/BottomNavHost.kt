@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.grx.lsc.ui.screens.home.HomeScreen
 import com.grx.lsc.ui.screens.home.HomeViewModel
+import com.grx.lsc.ui.screens.qr_code.QRScannerScreen
 
 @Composable
 fun BottomNavHost(

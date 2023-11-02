@@ -31,8 +31,8 @@ interface ApiService {
     @POST("drier-job-status")
     suspend fun drierJobStatus(
         @Header("Authorization") token: String,
-        @Field("mobile") id: String,
-        @Field("mobile") status: String,
+        @Field("id") id: String,
+        @Field("status") status: String,
     ): JobStatusResDTO
 
     @FormUrlEncoded

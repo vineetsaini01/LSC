@@ -215,7 +215,7 @@ fun CurrentTripsScreen(viewModel: HomeViewModel) {
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         onClick = {
-                            //onPressedScanQRCode()
+                            viewModel.onEvent(HomeEvent.OnPressedQrCode)
                         },
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(

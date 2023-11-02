@@ -11,6 +11,7 @@ import com.grx.lsc.ui.screens.auth.login.LoginScreen
 import com.grx.lsc.ui.screens.auth.login.LoginViewModel
 import com.grx.lsc.ui.screens.bottom_nav.BottomNavScreen
 import com.grx.lsc.ui.screens.landing.LandingScreen
+import com.grx.lsc.ui.screens.qr_code.QRScannerScreen
 import com.grx.lsc.ui.screens.splash.SplashScreen
 import com.grx.lsc.ui.screens.splash.SplashViewModel
 
@@ -57,6 +58,7 @@ fun AppNavHost(
             composable(AppDestination.BottomNav.route) {
                 BottomNavScreen(appNavController = appNavController)
             }
+
         }
     }
 }
