@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.grx.lsc.core.base_view_model.BaseViewModel
+import com.grx.lsc.core.base_view_model.BaseViewModelOld
 import com.grx.lsc.domain.models.DriverJobDetailsRes
 import com.grx.lsc.domain.repository.Repository
 import com.grx.lsc.domain.use_case.shared_pref.GetTokenUseCase
@@ -37,32 +38,26 @@ class HomeViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val appNavigator: AppNavigator,
     private val bottomNavigator: BottomNavigator,
-) : BaseViewModel<HomeEvent>() {
-
-
-    var isLoading by mutableStateOf(false)
-    var hasExpended by mutableStateOf(false)
-    var driverJobDetailsRes by mutableStateOf<DriverJobDetailsRes?>(null)
-
+) : BaseViewModel<HomeContract.Event, HomeContract.State>(HomeContract.State()) {
 
     init {
         driverJobDetails()
     }
 
-    override fun onEvent(event: HomeEvent) {
+    override fun event(event: HomeContract.Event) {
         event.apply {
             when (this) {
-                is HomeEvent.OnPressedAcceptOrReject -> {
+                is HomeContract.Event.OnPressedAcceptOrReject -> {
                     drierJobStatus(status = status)
                 }
 
-                is HomeEvent.OnPressedDocDownload -> {
-                    val link = driverJobDetailsRes?.data?.doc!!
+                is HomeContract.Event.OnPressedDocDownload -> {
+                    val link = state.value.driverJobDetailsRes?.data?.doc!!
                     val destination = File("/path/to/destination/filename.pdf")
                     downloadFile(link, destination)
                 }
 
-                is HomeEvent.OnPressedQrCode -> {
+                is HomeContract.Event.OnPressedQrCode -> {
                     bottomNavigator.navController.navigate(AppRoute.QRCode.route)
                 }
             }
@@ -121,18 +116,27 @@ class HomeViewModel @Inject constructor(
                 .onEach { resource ->
                     when (resource) {
                         is Resource.Success -> {
-                            isLoading = false
-                            if (resource.data?.status == "success") {
-                                driverJobDetailsRes = resource.data
+
+                            setState {
+                                copy(
+                                    isLoading = false,
+                                    driverJobDetailsRes = if (resource.data?.status == "success")
+                                        resource.data else null
+                                )
                             }
+
                         }
 
                         is Resource.Error -> {
-                            isLoading = false
+                            setState {
+                                copy(isLoading = false)
+                            }
                         }
 
                         is Resource.Loading -> {
-                            isLoading = true
+                            setState {
+                                copy(isLoading = false)
+                            }
                         }
                     }
                 }.launchIn(viewModelScope)
@@ -145,15 +149,19 @@ class HomeViewModel @Inject constructor(
 
             repository.drierJobStatus(
                 token = "Bearer " + getTokenUseCase(),
-                id = driverJobDetailsRes!!.data!!.id!!.toString(),
+                id = state.value.driverJobDetailsRes!!.data!!.id!!.toString(),
                 status = status
             ).onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        isLoading = false
+                        setState {
+                            copy(isLoading = false)
+                        }
                         if (resource.data?.message == "Status updated successfully") {
                             if (status == "accept") {
-                                hasExpended = true
+                                setState {
+                                    copy(hasExpended = true)
+                                }
                             } else {
                                 logoutUseCase()
                                 appNavigator.navController.popBackStack(
@@ -166,11 +174,15 @@ class HomeViewModel @Inject constructor(
                     }
 
                     is Resource.Error -> {
-                        isLoading = false
+                        setState {
+                            copy(isLoading = false)
+                        }
                     }
 
                     is Resource.Loading -> {
-                        isLoading = true
+                        setState {
+                            copy(isLoading = true)
+                        }
                     }
                 }
             }.launchIn(viewModelScope)

@@ -12,6 +12,7 @@ import com.grx.lsc.ui.screens.bottom_nav.BottomNavScreen
 import com.grx.lsc.ui.screens.landing.LandingScreen
 import com.grx.lsc.ui.screens.splash.SplashScreen
 import com.grx.lsc.ui.screens.splash.SplashViewModel
+
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
@@ -38,11 +39,17 @@ fun AppNavHost(
             }
             composable(AppRoute.Login.route) {
                 val viewModel = it.sharedViewModel<LoginViewModel>(appNavigator.navController)
-                LoginScreen(viewModel = viewModel)
+                LoginScreen(
+                    state = viewModel.state.value,
+                    onEvent = viewModel::event
+                )
             }
             composable(AppRoute.LoginOtp.route) {
                 val viewModel = it.sharedViewModel<LoginViewModel>(appNavigator.navController)
-                LoginOtpScreen(viewModel = viewModel)
+                LoginOtpScreen(
+                    state = viewModel.state.value,
+                    event = viewModel::event
+                )
             }
         }
 

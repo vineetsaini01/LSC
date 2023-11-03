@@ -1,14 +1,19 @@
 package com.grx.lsc.ui.screens.enter_details
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
+import androidx.navigation.NavBackStackEntry
 import com.grx.lsc.core.base_view_model.BaseViewModel
+import com.grx.lsc.core.base_view_model.BaseViewModelOld
 import com.grx.lsc.domain.models.DriverJobDetailsRes
 import com.grx.lsc.domain.repository.Repository
+import com.grx.lsc.domain.use_case.networks.DriverJobStoreUseCase
+import com.grx.lsc.ui.navigation.BottomNavigator
+import com.grx.lsc.ui.navigation.sharedViewModel
+import com.grx.lsc.ui.screens.home.HomeViewModel
 import com.grx.lsc.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -18,22 +23,42 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class EnterDetailsViewModel @Inject constructor(private val repository: Repository) :
-    BaseViewModel<EnterDetailsEvent>() {
+class EnterDetailsViewModel @Inject constructor(
+    private val driverJobStoreUseCase: DriverJobStoreUseCase,
+    private val bottomNavigator: BottomNavigator
+) :
+    BaseViewModel<EnterDetailsContract.Event, EnterDetailsContract.State>(EnterDetailsContract.State()) {
 
-    var isLoading by mutableStateOf(false)
+    @Composable
+    fun SetSharedData(navBackStackEntry: NavBackStackEntry) {
+        val driverJobDetailsRes =
+            navBackStackEntry
+                .sharedViewModel<HomeViewModel>(bottomNavigator.navController)
+                .state.value.driverJobDetailsRes
+        setState {
+            copy(driverJobDetailsRes = driverJobDetailsRes)
+        }
+    }
 
-    var containerNo by mutableStateOf("")
-    var sealNo by mutableStateOf("")
-    var driverJobDetailsRes: DriverJobDetailsRes? = null
 
-
-    override fun onEvent(event: EnterDetailsEvent) {
+    override fun event(event: EnterDetailsContract.Event) {
         event.apply {
             when (this) {
-                EnterDetailsEvent.OnPressedDone -> {
-                    driverJobStore()
+                is EnterDetailsContract.Event.OnChangedContainerNo -> {
+                    setState {
+                        copy(containerNo = newContainerNo)
+                    }
                 }
+
+                is EnterDetailsContract.Event.OnChangedSealNo -> {
+                    setState {
+                        copy(sealNo = newSealNo)
+                    }
+                }
+
+                EnterDetailsContract.Event.OnPressedDoneBtn -> TODO()
+                EnterDetailsContract.Event.OnPressedUploadDoc -> TODO()
+                EnterDetailsContract.Event.OnPressedUploadImage -> TODO()
             }
         }
     }
@@ -41,25 +66,30 @@ class EnterDetailsViewModel @Inject constructor(private val repository: Reposito
     private fun driverJobStore() {
         viewModelScope.launch(Dispatchers.IO) {
 
-            repository.driverJobStore(
-                id = "",
-                containerNo = containerNo,
+            driverJobStoreUseCase(
+                id = state.value.driverJobDetailsRes?.data?.id.toString(),
+                containerNo = state.value.containerNo,
                 imagesVideos = "",
-                sealNo = sealNo
+                sealNo = state.value.sealNo
             )
                 .onEach { resource ->
                     when (resource) {
                         is Resource.Success -> {
-                            isLoading = false
-
+                            setState {
+                                copy(isLoading = true)
+                            }
                         }
 
                         is Resource.Error -> {
-                            isLoading = false
+                            setState {
+                                copy(isLoading = true)
+                            }
                         }
 
                         is Resource.Loading -> {
-                            isLoading = true
+                            setState {
+                                copy(isLoading = true)
+                            }
                         }
                     }
                 }.launchIn(viewModelScope)

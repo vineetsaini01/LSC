@@ -3,6 +3,7 @@ package com.grx.lsc.ui.screens.enter_details
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,24 +20,28 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
+import androidx.core.content.FileProvider
+import androidx.core.os.BuildCompat
 import com.grx.lsc.R
+import java.util.Objects
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnterDetailsScreen(viewModel: EnterDetailsViewModel) {
+fun EnterDetailsScreen(
+    state: EnterDetailsContract.State,
+    event: (event: EnterDetailsContract.Event) -> Unit,
+) {
 
 
     Column(
@@ -48,15 +53,15 @@ fun EnterDetailsScreen(viewModel: EnterDetailsViewModel) {
         ) {
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = viewModel.containerNo,
-            onValueChange = { viewModel.containerNo = it },
+            value = state.containerNo,
+            onValueChange = { event(EnterDetailsContract.Event.OnChangedContainerNo(it)) },
             label = { Text("Container No") }
         )
 
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
-            value = viewModel.sealNo,
-            onValueChange = { viewModel.sealNo = it },
+            value = state.sealNo,
+            onValueChange = { event(EnterDetailsContract.Event.OnChangedSealNo(it)) },
             label = { Text("Seal No") }
         )
 
@@ -70,14 +75,20 @@ fun EnterDetailsScreen(viewModel: EnterDetailsViewModel) {
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
-                title = "Upload Image"
+                title = "Upload Image",
+                onPressed = {
+
+                }
             )
 
             UploadDocs(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
-                title = "Upload Image"
+                title = "Upload Image",
+                onPressed = {
+
+                }
             )
         }
 
@@ -91,7 +102,7 @@ fun EnterDetailsScreen(viewModel: EnterDetailsViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp), // You can adjust the padding as needed
-                onClick = { viewModel.onEvent(EnterDetailsEvent.OnPressedDone) },
+                onClick = { event(EnterDetailsContract.Event.OnPressedDoneBtn) },
                 shape = RoundedCornerShape(10.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF00920F),
@@ -109,17 +120,21 @@ fun EnterDetailsScreen(viewModel: EnterDetailsViewModel) {
 }
 
 @Composable
-fun UploadDocs(title: String, modifier: Modifier = Modifier) {
+fun UploadDocs(title: String, modifier: Modifier = Modifier, onPressed: () -> Unit) {
+
 
     Column(
         modifier = modifier
             .height(90.dp)
             .border(
                 width = 1.dp,
-                color = Color(0xFFD9D9D9),
+                color = Color.Gray,
                 shape = RoundedCornerShape(size = 12.dp)
             )
-            .background(color = Color.White, shape = RoundedCornerShape(size = 12.dp)),
+            .background(color = Color.White, shape = RoundedCornerShape(size = 12.dp))
+            .clickable {
+                onPressed()
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {

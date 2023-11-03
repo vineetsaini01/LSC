@@ -1,50 +1,94 @@
 package com.grx.lsc.ui.screens.boggie_trailer
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
+import androidx.navigation.NavBackStackEntry
 import com.grx.lsc.core.base_view_model.BaseViewModel
-import com.grx.lsc.domain.models.DriverJobDetailsRes
-import com.grx.lsc.domain.repository.Repository
+import com.grx.lsc.core.base_view_model.BaseViewModelOld
 import com.grx.lsc.ui.navigation.AppRoute
 import com.grx.lsc.ui.navigation.BottomNavigator
-import com.grx.lsc.utils.Resource
+import com.grx.lsc.ui.navigation.sharedViewModel
+import com.grx.lsc.ui.screens.home.HomeViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class BoggieTrailerViewModel @Inject constructor(
-    private val repository: Repository,
     private val bottomNavigator: BottomNavigator,
-) : BaseViewModel<BoggieTrailerEvent>() {
+) : BaseViewModel<BoggieTrailerContract.Event, BoggieTrailerContract.State>(BoggieTrailerContract.State()) {
+
+    @Composable
+    fun SetSharedData(navBackStackEntry: NavBackStackEntry) {
+        val driverJobDetailsRes =
+            navBackStackEntry
+                .sharedViewModel<HomeViewModel>(bottomNavigator.navController)
+                .state.value.driverJobDetailsRes
+        setState {
+            copy(driverJobDetailsRes = driverJobDetailsRes)
+        }
+    }
 
 
-    var driverJobDetailsRes: DriverJobDetailsRes? = null
-
-    var openDialog by mutableStateOf(true)
-    var openDialog2 by mutableStateOf(false)
-
-
-    override fun onEvent(event: BoggieTrailerEvent) {
+    override fun event(event: BoggieTrailerContract.Event) {
         event.apply {
             when (this) {
-                BoggieTrailerEvent.OnPressedChange -> {
-
+                is BoggieTrailerContract.Event.OnPressedChangeNo -> {
+                    setState {
+                        copy(showAlertChangeNo = true)
+                    }
                 }
-                BoggieTrailerEvent.OnPressedYesConfirmBtn -> {
-                    openDialog2 = true
+
+                is BoggieTrailerContract.Event.OnPressedYesConfirmBtn -> {
+                    setState {
+                        copy(showAlertTripBeenStarted = true)
+                    }
                     viewModelScope.launch {
                         delay(2000)
-                        openDialog2 = false
+                        setState {
+                            copy(showAlertTripBeenStarted = false)
+                        }
                         bottomNavigator.navController.navigate(AppRoute.EnterDetails.route)
+                    }
+                }
+
+                is BoggieTrailerContract.Event.OnChangedTabIndex -> {
+
+                    setState {
+                        copy(tabIndex = newIndex)
+                    }
+                }
+
+                is BoggieTrailerContract.Event.OnChangedBoggieNumber -> {
+                    setState {
+                        copy(boggieNumber = newBoggieNumber)
+                    }
+                }
+
+                is BoggieTrailerContract.Event.OnChangedTrailerNumber -> {
+                    setState {
+                        copy(trailerNumber = newTrailerNumber)
+                    }
+                }
+
+                is BoggieTrailerContract.Event.OnDismissRequestAlert -> {
+
+                    setState {
+                        copy(showAlertChangeNo = false, showAlertTripBeenStarted = false)
+                    }
+                }
+
+                is BoggieTrailerContract.Event.OnClickBoggieNumberEnabled -> {
+                    setState {
+                        copy(hasBoggieNumberEnabled = !this.hasBoggieNumberEnabled)
+                    }
+                }
+
+                is BoggieTrailerContract.Event.OnClickTrailerNumberEnabled -> {
+
+                    setState {
+                        copy(hasTrailerNumberEnabled = !this.hasTrailerNumberEnabled)
                     }
                 }
             }

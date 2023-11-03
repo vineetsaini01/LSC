@@ -18,16 +18,17 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.grx.lsc.R
 import com.grx.lsc.ui.components.CustomTextField
 import com.grx.lsc.ui.components.Loading
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel) {
+fun LoginScreen(
+    state: LoginContract.State,
+    onEvent: (event: LoginContract.Event) -> Unit,
+) {
 
     Column(
         modifier = Modifier.padding(
@@ -49,21 +50,13 @@ fun LoginScreen(viewModel: LoginViewModel) {
 
         Text(text = "Log in ")
 
-//        OutlinedTextField(
-//            modifier = Modifier.fillMaxWidth(),
-//            value = viewModel.mobileN0,
-//            leadingIcon = {Text("+91")},
-//            onValueChange = { viewModel.mobileN0=it },
-//            label = { Text("Mobile No") }
-//        )
-
         CustomTextField(
-            value = viewModel.mobileN0,
+            value = state.mobileNo,
             leadingIcon = { Text("+91") },
             onValueChange = {
-                viewModel.onEvent(LoginEvent.OnChangedMobileNumber(it))
+                onEvent(LoginContract.Event.OnChangedMobileNumber(it))
             },
-            errorMessage = viewModel.mobileError,
+            errorMessage = state.mobileError,
             label = "Mobile No"
         )
 
@@ -81,19 +74,13 @@ fun LoginScreen(viewModel: LoginViewModel) {
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
-            onClick = { viewModel.onEvent(LoginEvent.SendOtp) },
+            onClick = { onEvent(LoginContract.Event.SendOtp) },
             shape = RoundedCornerShape(10.dp),
         ) {
             Text("Send Otp")
         }
     }
 
-    Loading(isLoading = viewModel.isLoading)
+    Loading(isLoading = state.isLoading)
 
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen(hiltViewModel())
 }

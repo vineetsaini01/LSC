@@ -35,14 +35,17 @@ import com.grx.lsc.ui.components.OtpView
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginOtpScreen(viewModel: LoginViewModel) {
+fun LoginOtpScreen(
+    state: LoginContract.State,
+    event: (event: LoginContract.Event) -> Unit,
+) {
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { viewModel.onEvent(LoginEvent.OnBackPress) }) {
+                        IconButton(onClick = { event(LoginContract.Event.OnBackPress) }) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = Icons.Default.KeyboardArrowLeft,
@@ -74,17 +77,17 @@ fun LoginOtpScreen(viewModel: LoginViewModel) {
             )
 
             Text(
-                text = "We have sent a verification code to +91-${viewModel.mobileN0}",
+                text = "We have sent a verification code to +91-${state.mobileNo}",
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp
             )
 
             OtpView(
                 onValueChange = {
-                    viewModel.onEvent(LoginEvent.OnChangedMobileOTP(it))
+                    event(LoginContract.Event.OnChangedMobileOTP(it))
                 },
-                otpValue = viewModel.mobileOtp,
-                errorMessage = viewModel.mobileOTPError
+                otpValue = state.mobileOtp,
+                errorMessage = state.mobileOTPError
             )
 
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -110,7 +113,7 @@ fun LoginOtpScreen(viewModel: LoginViewModel) {
                 modifier = Modifier
                     .fillMaxWidth(),
                 onClick = {
-                    viewModel.onEvent(LoginEvent.VerifyCode)
+                    event(LoginContract.Event.VerifyCode)
                 },
                 shape = RoundedCornerShape(10.dp),
             ) {

@@ -28,21 +28,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.grx.lsc.R
 import com.grx.lsc.ui.components.SmallDetails
-import com.grx.lsc.ui.screens.home.HomeEvent
-import com.grx.lsc.ui.screens.home.HomeViewModel
+import com.grx.lsc.ui.screens.home.HomeContract
 
 
 @Composable
-fun CurrentTripsScreen(viewModel: HomeViewModel) {
+fun CurrentTripsScreen(
+    state: HomeContract.State,
+    event: (event: HomeContract.Event) -> Unit,
+) {
 
 
-    viewModel.driverJobDetailsRes?.data?.let { data ->
+    state.driverJobDetailsRes?.data?.let { data ->
         Box(
             modifier = Modifier
                 .border(
@@ -131,7 +131,7 @@ fun CurrentTripsScreen(viewModel: HomeViewModel) {
                     modifier = Modifier.padding(start = 16.dp),
                     drawable = R.drawable.delivery, text = "Trucks with awnings"
                 )
-                if (!viewModel.hasExpended) {
+                if (!state.hasExpended) {
 
                     Row(
                         modifier = Modifier
@@ -144,9 +144,7 @@ fun CurrentTripsScreen(viewModel: HomeViewModel) {
                                 .weight(1f)
                                 .fillMaxWidth(),
                             onClick = {
-                                viewModel.onEvent(
-                                    event = HomeEvent.OnPressedAcceptOrReject("accept")
-                                )
+                                event(HomeContract.Event.OnPressedAcceptOrReject("accept"))
                             },
                             shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(
@@ -161,9 +159,7 @@ fun CurrentTripsScreen(viewModel: HomeViewModel) {
                                 .weight(1f)
                                 .fillMaxWidth(),
                             onClick = {
-                                viewModel.onEvent(
-                                    event = HomeEvent.OnPressedAcceptOrReject("reject")
-                                )
+                                event(HomeContract.Event.OnPressedAcceptOrReject("reject"))
                             },
                             shape = RoundedCornerShape(10.dp),
                             colors = ButtonDefaults.buttonColors(
@@ -200,7 +196,7 @@ fun CurrentTripsScreen(viewModel: HomeViewModel) {
                                 drawable = R.drawable.document_text,
                                 text = "Registration",
                                 modifier = Modifier.clickable {
-                                    viewModel.onEvent(HomeEvent.OnPressedDocDownload)
+                                    event(HomeContract.Event.OnPressedDocDownload)
                                 }
                             )
 
@@ -216,7 +212,7 @@ fun CurrentTripsScreen(viewModel: HomeViewModel) {
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                         onClick = {
-                            viewModel.onEvent(HomeEvent.OnPressedQrCode)
+                            event(HomeContract.Event.OnPressedQrCode)
                         },
                         shape = RoundedCornerShape(10.dp),
                         colors = ButtonDefaults.buttonColors(
@@ -238,8 +234,3 @@ fun CurrentTripsScreen(viewModel: HomeViewModel) {
 }
 
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun CurrentTripsScreenPreview() {
-    CurrentTripsScreen(hiltViewModel())
-}

@@ -6,6 +6,6 @@ import com.grx.lsc.ui.screens.home.HomeViewModel
 
 
 @Composable
-fun HistoryScreen(viewModel: HomeViewModel) {
+fun HistoryScreen() {
     Text("HistoryScreen")
 }

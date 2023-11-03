@@ -1,10 +1,8 @@
 package com.grx.lsc.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
@@ -16,9 +14,6 @@ import com.grx.lsc.ui.screens.home.HomeScreen
 import com.grx.lsc.ui.screens.home.HomeViewModel
 import com.grx.lsc.ui.screens.qr_code.QRScannerScreen
 import com.grx.lsc.ui.screens.qr_code.QRViewModel
-import com.grx.lsc.ui.screens.splash.SplashViewModel
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun BottomNavHost(
@@ -42,26 +37,34 @@ fun BottomNavHost(
             }
 
             composable(AppRoute.QRCode.route) {
-                val viewModel = it.sharedViewModel<HomeViewModel>(bottomNavigator.navController)
-                QRScannerScreen(hiltViewModel<QRViewModel>().apply {
-                    this.driverJobDetailsRes = viewModel.driverJobDetailsRes
-                })
+
+                val viewModel = hiltViewModel<QRViewModel>().apply {
+                    SetSharedData(it)
+                }
+                QRScannerScreen(
+                    state = viewModel.state.value,
+                    event = viewModel::event
+                )
             }
 
             composable(AppRoute.BoggieTrailer.route) {
-
-                val viewModel = it.sharedViewModel<HomeViewModel>(bottomNavigator.navController)
-                BoggieTrailerScreen(hiltViewModel<BoggieTrailerViewModel>().apply {
-                    this.driverJobDetailsRes = viewModel.driverJobDetailsRes
-                })
+                val viewModel = hiltViewModel<BoggieTrailerViewModel>().apply {
+                    SetSharedData(it)
+                }
+                BoggieTrailerScreen(
+                    state = viewModel.state.value,
+                    event = viewModel::event
+                )
             }
 
             composable(AppRoute.EnterDetails.route) {
-
-                val viewModel = it.sharedViewModel<HomeViewModel>(bottomNavigator.navController)
-                EnterDetailsScreen(hiltViewModel<EnterDetailsViewModel>().apply {
-                    this.driverJobDetailsRes = viewModel.driverJobDetailsRes
-                })
+                val viewModel = hiltViewModel<EnterDetailsViewModel>().apply {
+                    SetSharedData(it)
+                }
+                EnterDetailsScreen(
+                    state = viewModel.state.value,
+                    event = viewModel::event
+                )
             }
         }
 

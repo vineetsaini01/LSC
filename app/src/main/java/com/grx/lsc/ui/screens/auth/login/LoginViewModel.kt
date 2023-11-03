@@ -1,8 +1,5 @@
 package com.grx.lsc.ui.screens.auth.login
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.grx.lsc.core.base_view_model.BaseViewModel
 import com.grx.lsc.domain.use_case.networks.SendVerificationCodeUseCase
@@ -28,47 +25,48 @@ class LoginViewModel @Inject constructor(
     private val appNavigator: AppNavigator,
     private val sendVerificationCodeUseCase: SendVerificationCodeUseCase,
     private val verifyCodeUseCase: VerifyCodeUseCase,
-) : BaseViewModel<LoginEvent>() {
+) : BaseViewModel<LoginContract.Event, LoginContract.State>(LoginContract.State()) {
 
 
-    var mobileN0 by mutableStateOf("")
-    var mobileError by mutableStateOf<String?>(null)
-    var mobileOTPError by mutableStateOf<String?>(null)
-    var mobileOtp by mutableStateOf("")
-    var isLoading by mutableStateOf(false)
+    override fun event(event: LoginContract.Event) {
 
-    override fun onEvent(event: LoginEvent) {
         event.apply {
             when (this) {
-                is LoginEvent.OnChangedMobileNumber -> {
-                    mobileN0 = newMobileNo
-                    mobileError = null
+                is LoginContract.Event.OnChangedMobileNumber -> {
+                    setState {
+                        copy(mobileNo = newMobileNo, mobileError = null)
+                    }
                 }
 
-                is LoginEvent.OnChangedMobileOTP -> {
-                    mobileOtp = newMobileOTP
-                    mobileError = null
+                is LoginContract.Event.OnChangedMobileOTP -> {
+                    setState {
+                        copy(mobileOtp = newMobileOTP, mobileOTPError = null)
+                    }
                 }
 
-                is LoginEvent.SendOtp -> {
-                    val phoneNumberResult = validatePhoneNumber.invoke(mobileN0)
+                is LoginContract.Event.SendOtp -> {
+                    val phoneNumberResult = validatePhoneNumber.invoke(state.value.mobileNo)
                     if (!phoneNumberResult.success) {
-                        mobileError = phoneNumberResult.message
+                        setState {
+                            copy(mobileError = phoneNumberResult.message)
+                        }
                         return
                     }
                     sendVerificationCode()
                 }
 
-                LoginEvent.VerifyCode -> {
-                    val phoneNumberResult = validateOtp.invoke(mobileOtp)
+                is LoginContract.Event.VerifyCode -> {
+                    val phoneNumberResult = validateOtp(state.value.mobileOtp)
                     if (!phoneNumberResult.success) {
-                        mobileOTPError = phoneNumberResult.message
+                        setState {
+                            copy(mobileOTPError = phoneNumberResult.message)
+                        }
                         return
                     }
                     verifyCode()
                 }
 
-                is LoginEvent.OnBackPress -> {
+                is LoginContract.Event.OnBackPress -> {
                     appNavigator.navController.popBackStack()
                 }
             }
@@ -79,21 +77,30 @@ class LoginViewModel @Inject constructor(
     private fun sendVerificationCode() {
         viewModelScope.launch(Dispatchers.IO) {
 
-            sendVerificationCodeUseCase(mobile = "+91$mobileN0").onEach { resource ->
+            sendVerificationCodeUseCase(mobile = "+91${state.value.mobileNo}").onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        if (resource.data?.message == "Verification code sent")
-                            appNavigator.navController.navigate(AppRoute.LoginOtp.route)
-                        else mobileError = resource.data?.message
-                        isLoading = false
+                        if (resource.data?.message == "Verification code sent") appNavigator.navController.navigate(
+                            AppRoute.LoginOtp.route
+                        )
+                        else setState {
+                            copy(mobileError = resource.data?.message)
+                        }
+                        setState {
+                            copy(isLoading = false)
+                        }
                     }
 
                     is Resource.Error -> {
-                        isLoading = false
+                        setState {
+                            copy(isLoading = false)
+                        }
                     }
 
                     is Resource.Loading -> {
-                        isLoading = true
+                        setState {
+                            copy(isLoading = true)
+                        }
                     }
                 }
             }.launchIn(viewModelScope)
@@ -105,8 +112,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             verifyCodeUseCase(
-                verificationCode = mobileOtp,
-                mobile = "+91$mobileN0"
+                verificationCode = state.value.mobileOtp, mobile = "+91${state.value.mobileNo}"
             ).onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {
@@ -115,17 +121,27 @@ class LoginViewModel @Inject constructor(
                             appNavigator.navController.popBackStack(AppRoute.AuthRoute.route, true)
                             appNavigator.navController.navigate(AppRoute.BottomNavRoute.route)
                         } else {
-                            mobileError = resource.data?.message
+                            setState {
+                                copy(
+                                    mobileError = resource.data?.message
+                                )
+                            }
                         }
-                        isLoading = false
+                        setState {
+                            copy(isLoading = false)
+                        }
                     }
 
                     is Resource.Error -> {
-                        isLoading = false
+                        setState {
+                            copy(isLoading = false)
+                        }
                     }
 
                     is Resource.Loading -> {
-                        isLoading = true
+                        setState {
+                            copy(isLoading = true)
+                        }
                     }
                 }
             }.launchIn(viewModelScope)

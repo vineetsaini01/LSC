@@ -1,9 +1,6 @@
 package com.grx.lsc.ui.components
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
@@ -21,6 +18,7 @@ fun CustomTextField(
     singleLine: Boolean = true,
     value: String,
     leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
     onValueChange: (String) -> Unit,
     label: String = "",
     keyboardType: KeyboardType = KeyboardType.Text,
@@ -31,14 +29,12 @@ fun CustomTextField(
 ) {
     Column {
         OutlinedTextField(
-            modifier = modifier.fillMaxWidth().border(
-                width = 1.dp,
-                color = borderColor,
-                shape = RoundedCornerShape(8.dp)
-            ),
+            modifier = modifier.fillMaxWidth(),
             singleLine = singleLine,
             value = value,
             isError = isError,
+            enabled=enabled,
+            trailingIcon = trailingIcon,
             leadingIcon = leadingIcon,
             onValueChange = onValueChange,
             label = { Text(text = label) }

@@ -5,19 +5,14 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import androidx.compose.runtime.Composable
 import androidx.core.content.ContextCompat
-import android.util.Log
 import android.util.Size
-import android.widget.Toast
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST
-import androidx.camera.core.ImageCapture
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
@@ -64,15 +59,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.grx.lsc.R
 import com.grx.lsc.core.scanner.BarCodeAnalyser
-import com.grx.lsc.ui.components.AlertDialogWrapper
 import com.grx.lsc.ui.components.AlertDialogWrapperWithTopBar
-import com.grx.lsc.ui.components.Loading
 import com.grx.lsc.ui.components.RoundedButton
-import com.grx.lsc.ui.screens.bottom_nav.BottomViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -80,7 +70,8 @@ import com.grx.lsc.ui.screens.bottom_nav.BottomViewModel
 @OptIn(ExperimentalGetImage::class)
 @Composable
 fun QRScannerScreen(
-    viewModel: QRViewModel = hiltViewModel(),
+    state: QRCodeContract.State,
+    event: (QRCodeContract.Event) -> Unit,
 ) {
 
     val context = LocalContext.current
@@ -110,7 +101,7 @@ fun QRScannerScreen(
 
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { viewModel.onEvent(QREvent.OnBackPressed) }) {
+                        IconButton(onClick = { event(QRCodeContract.Event.OnBackPressed) }) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
                                 imageVector = Icons.Default.KeyboardArrowLeft,
@@ -125,14 +116,8 @@ fun QRScannerScreen(
                     titleContentColor = Color.White
                 )
             )
-        }, bottomBar = {
-            RoundedButton(
-                modifier = Modifier.fillMaxWidth(),
-                title = "Scan QR Code",
-                onClick = {
-                    viewModel.onEvent(QREvent.ScanQRCode)
-                })
-        }) {
+        },
+    ) {
 
 
         Box(
@@ -141,7 +126,6 @@ fun QRScannerScreen(
         ) {
             if (hasCamPermission) {
                 AndroidView(
-
                     modifier = Modifier
                         .padding(26.dp)
                         .fillMaxWidth()
@@ -165,7 +149,7 @@ fun QRScannerScreen(
                         imageAnalysis.setAnalyzer(
                             ContextCompat.getMainExecutor(context),
                             BarCodeAnalyser {
-                                viewModel.code = it
+                                event(QRCodeContract.Event.OnChangedQrCode(it))
                             }
                         )
                         try {
@@ -182,25 +166,37 @@ fun QRScannerScreen(
                         previewView
 
                     },
-
-                    )
-                if(viewModel.code.isNotBlank()){
+                )
+                RoundedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.BottomCenter)
+                        .padding(26.dp),
+                    title = "Scan QR Code",
+                    onClick = {
+                        event(QRCodeContract.Event.ScanQRCode)
+                    },
+                )
+                if (state.code.isNotBlank()) {
                     AlertDialogWrapperWithTopBar(
                         title = "Confirmed",
                         onDismissRequest = {
-                            viewModel.code=""
+                            event(QRCodeContract.Event.OnChangedQrCode(""))
                         }
                     ) {
-                        Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
                             Spacer(modifier = Modifier.height(10.dp))
 
-                            if (viewModel.isLoading) {
+                            if (state.isLoading) {
                                 CircularProgressIndicator(
                                     strokeWidth = 2.dp,
                                     modifier = Modifier.size(60.dp)
                                 )
                             }
-                            if (viewModel.success) {
+                            if (state.success) {
                                 Image(
                                     painter = painterResource(id = R.drawable.right_done),
                                     contentDescription = ""
@@ -222,7 +218,7 @@ fun QRScannerScreen(
                             Button(
                                 modifier = Modifier
                                     .fillMaxWidth(),
-                                onClick = { viewModel.onEvent(QREvent.UploadVehicleNumber)},
+                                onClick = { event(QRCodeContract.Event.UploadVehicleNumber) },
                                 shape = RoundedCornerShape(10.dp),
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = Color(0xFF00920F),
@@ -234,8 +230,6 @@ fun QRScannerScreen(
                         }
                     }
                 }
-
-                //Toast.makeText(context, code, Toast.LENGTH_SHORT).show()
 
             }
         }

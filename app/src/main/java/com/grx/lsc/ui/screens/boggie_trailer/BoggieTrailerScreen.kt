@@ -13,12 +13,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -33,21 +33,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import com.grx.lsc.R
 import com.grx.lsc.ui.components.AlertDialogWrapper
 import com.grx.lsc.ui.components.AlertDialogWrapperWithTopBar
+import com.grx.lsc.ui.components.CustomTextField
+import com.grx.lsc.ui.components.RoundedButton
+import com.grx.lsc.ui.screens.auth.login.LoginContract
+import com.grx.lsc.ui.screens.qr_code.QRCodeContract
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoggieTrailerScreen(
-    viewModel: BoggieTrailerViewModel,
+    state: BoggieTrailerContract.State,
+    event: (event: BoggieTrailerContract.Event) -> Unit,
 ) {
-
-    var tabIndex by remember { mutableIntStateOf(0) }
-
-    val tabs = listOf("Boggie No", "Trailer NO")
 
     Scaffold(
         modifier = Modifier.padding(horizontal = 16.dp),
@@ -56,7 +55,7 @@ fun BoggieTrailerScreen(
                 Button(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    onClick = { viewModel.onEvent(BoggieTrailerEvent.OnPressedYesConfirmBtn) },
+                    onClick = { event(BoggieTrailerContract.Event.OnPressedYesConfirmBtn) },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF00920F),
@@ -71,7 +70,9 @@ fun BoggieTrailerScreen(
                 Button(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    onClick = { },
+                    onClick = {
+                        event(BoggieTrailerContract.Event.OnPressedChangeNo)
+                    },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFFF5E5E),
@@ -87,23 +88,23 @@ fun BoggieTrailerScreen(
     ) {
         Column(modifier = Modifier.padding(it)) {
 
-            TabRow(selectedTabIndex = tabIndex) {
-                tabs.forEachIndexed { index, title ->
+            TabRow(selectedTabIndex = state.tabIndex) {
+                BoggieTrailerContract.tabLabelList.forEachIndexed { index, title ->
                     Tab(text = { Text(title) },
-                        selected = tabIndex == index,
-                        onClick = { tabIndex = index }
+                        selected = state.tabIndex == index,
+                        onClick = { event(BoggieTrailerContract.Event.OnChangedTabIndex(index)) }
                     )
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
-            when (tabIndex) {
-                0 -> BoggieTrailerInnerView("Boggie Number: #${viewModel.driverJobDetailsRes?.data?.boggie_number}")
-                1 -> BoggieTrailerInnerView("Trailer Number #${viewModel.driverJobDetailsRes?.data?.trailer_number}")
+            when (state.tabIndex) {
+                0 -> BoggieTrailerInnerView("Boggie Number: #${state.driverJobDetailsRes?.data?.boggie_number}")
+                1 -> BoggieTrailerInnerView("Trailer Number #${state.driverJobDetailsRes?.data?.trailer_number}")
             }
 
 
 
-            if (viewModel.openDialog2) {
+            if (state.showAlertTripBeenStarted) {
                 AlertDialogWrapper(
                     onDismissRequest = {}
                 ) {
@@ -127,6 +128,58 @@ fun BoggieTrailerScreen(
                                 textAlign = TextAlign.Center,
                             )
                         )
+
+                    }
+                }
+            }
+
+            if (state.showAlertChangeNo) {
+                AlertDialogWrapperWithTopBar(
+                    title = "Change Boggie/Trailer Number",
+                    onDismissRequest = {
+                        event(BoggieTrailerContract.Event.OnDismissRequestAlert)
+                    }
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+
+                        CustomTextField(
+                            value = state.boggieNumber,
+                            enabled =state.hasBoggieNumberEnabled,
+                            trailingIcon = {
+                                RadioButton(
+                                    selected = state.hasBoggieNumberEnabled,
+                                    onClick = { event(BoggieTrailerContract.Event.OnClickBoggieNumberEnabled) })
+                            },
+                            onValueChange = {
+                                event(BoggieTrailerContract.Event.OnChangedBoggieNumber(it))
+                            },
+                            label = "Boggie Number"
+                        )
+
+                        Spacer(modifier = Modifier.height(20.dp))
+                        CustomTextField(
+                            value = state.trailerNumber,
+                            enabled =state.hasTrailerNumberEnabled,
+                            trailingIcon = {
+                                RadioButton(
+                                    selected = state.hasTrailerNumberEnabled,
+                                    onClick = { event(BoggieTrailerContract.Event.OnClickTrailerNumberEnabled) })
+                            },
+                            onValueChange = {
+                                event(BoggieTrailerContract.Event.OnChangedTrailerNumber(it))
+                            },
+                            label = "Trailer Number"
+                        )
+
+                        Spacer(modifier = Modifier.height(40.dp))
+
+                        RoundedButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            title = "Save",
+                            onClick = { })
 
                     }
                 }

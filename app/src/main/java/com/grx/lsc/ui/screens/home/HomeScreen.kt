@@ -35,16 +35,13 @@ fun HomeScreen(viewModel: HomeViewModel) {
             }
         }
         when (tabIndex) {
-            0 -> CurrentTripsScreen(viewModel)
-            1 -> HistoryScreen(viewModel)
+            0 -> CurrentTripsScreen(
+                state = viewModel.state.value,
+                event = viewModel::event
+            )
+            1 -> HistoryScreen()
         }
 
     }
 
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun HomePreview() {
-    HomeScreen(hiltViewModel())
 }
