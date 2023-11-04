@@ -1,8 +1,10 @@
 package com.grx.lsc.ui.screens.enter_details
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.content.Intent
+import android.graphics.Bitmap
+import android.location.Location
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.activity.result.ActivityResult
 import com.grx.lsc.domain.models.DriverJobDetailsRes
 
 
@@ -16,13 +18,19 @@ class EnterDetailsContract {
 
         object OnPressedUploadImage : Event()
         object OnPressedUploadDoc : Event()
+
+        data class OnPressedRemoveBitmap(val reqBitmap: Bitmap) : Event()
     }
 
     data class State(
-        val containerNo: String = "",
-        val sealNo: String = "",
+        val containerNo: String = "456763",
+        val sealNo: String = "877675",
         val isLoading: Boolean = false,
-        var driverJobDetailsRes: DriverJobDetailsRes? = null
+        var driverJobDetailsRes: DriverJobDetailsRes? = null,
+        var cameraLauncher: ManagedActivityResultLauncher<Void?, Bitmap?>? = null,
+        val docLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null,
+        val bitmaps: List<Bitmap> = listOf(),
+        val location: Location? = null,
     )
 
 

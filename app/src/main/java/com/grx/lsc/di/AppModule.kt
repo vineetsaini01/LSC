@@ -1,5 +1,8 @@
 package com.grx.lsc.di
 
+import android.content.Context
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.grx.lsc.data.remote.ApiService
 import com.grx.lsc.utils.Constants.BASE_URL
 import com.grx.lsc.data.repository.RepositoryImpl
@@ -10,6 +13,7 @@ import com.grx.lsc.domain.repository.SharedPrefRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -58,5 +62,12 @@ object AppModule {
     @Provides
     fun providesSharedPrefRepository(sharedPrefStorage: SharedPrefStorage): SharedPrefRepository {
         return SharedPrefRepositoryImpl(sharedPrefStorage = sharedPrefStorage)
+    }
+
+
+    @Singleton
+    @Provides
+    fun provideFusedLocationProviderClient(@ApplicationContext context: Context): FusedLocationProviderClient {
+        return LocationServices.getFusedLocationProviderClient(context)
     }
 }

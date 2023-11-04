@@ -10,6 +10,7 @@ import com.grx.lsc.mapper.Mapper.toDriverJobDetailsRes
 import com.grx.lsc.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MultipartBody
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -115,18 +116,24 @@ class RepositoryImpl @Inject constructor(
     }
 
     override suspend fun driverJobStore(
+        token: String,
         sealNo: String,
         id: String,
         containerNo: String,
-        imagesVideos: String,
+        latitude: String,
+        longitude: String,
+        imagesVideos: List<MultipartBody.Part>
     ): Flow<Resource<JobStatusRes?>> = flow {
         emit(Resource.Loading())
         val remoteData = try {
             apiHelper.driverJobStore(
-                sealNo,
-                id,
-                containerNo,
-                imagesVideos
+                token = token,
+                sealNo = sealNo,
+                id = id,
+                containerNo = containerNo,
+                imagesVideos = imagesVideos,
+                latitude = latitude,
+                longitude = longitude
             )
         } catch (e: HttpException) {
             emit(Resource.Error(message = "An unexpected error occurred"))

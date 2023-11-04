@@ -6,6 +6,7 @@ import com.grx.lsc.domain.models.SendVerificationCodeRes
 import com.grx.lsc.domain.models.VerifyCodeRes
 import com.grx.lsc.utils.Resource
 import kotlinx.coroutines.flow.Flow
+import okhttp3.MultipartBody
 import retrofit2.http.Field
 
 interface Repository {
@@ -30,10 +31,13 @@ interface Repository {
     ): Flow<Resource<JobStatusRes?>>
 
     suspend fun driverJobStore(
+        token: String,
         sealNo: String,
         id: String,
         containerNo: String,
-        imagesVideos: String,
+        latitude: String,
+        longitude: String,
+        imagesVideos: List<MultipartBody.Part>,
     ): Flow<Resource<JobStatusRes?>>
 
 }

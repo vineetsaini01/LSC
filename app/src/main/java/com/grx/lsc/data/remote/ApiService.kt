@@ -4,6 +4,7 @@ import com.grx.lsc.data.dto.DriverJobDetailsResDTO
 import com.grx.lsc.data.dto.JobStatusResDTO
 import com.grx.lsc.data.dto.SendVerificationCodeResDTO
 import com.grx.lsc.data.dto.VerifyCodeResDTO
+import okhttp3.MultipartBody
 import retrofit2.http.*
 
 interface ApiService {
@@ -33,6 +34,7 @@ interface ApiService {
         @Header("Authorization") token: String,
         @Field("id") id: String,
         @Field("status") status: String,
+        @Field("reason") reason: String? = null,
     ): JobStatusResDTO
 
     @FormUrlEncoded
@@ -46,9 +48,12 @@ interface ApiService {
     @FormUrlEncoded
     @POST("driver-job-store")
     suspend fun driverJobStore(
+        @Header("Authorization") token: String,
         @Field("seal_no") sealNo: String,
         @Field("id") id: String,
         @Field("container_no") containerNo: String,
-        @Field("images_and_videos") imagesVideos: String,
+        @Field("latitude") latitude: String,
+        @Field("longitude") longitude: String,
+        @Field("images_and_videos") imagesVideos: List<MultipartBody.Part>,
     ): JobStatusResDTO
 }

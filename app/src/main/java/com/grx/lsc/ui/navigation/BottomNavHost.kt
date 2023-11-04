@@ -28,7 +28,7 @@ fun BottomNavHost(
         startDestination = AppRoute.HomeRoute.route,
     ) {
         navigation(
-            startDestination = AppRoute.Home.route,
+            startDestination = AppRoute.EnterDetails.route,
             route = AppRoute.HomeRoute.route
         ) {
             composable(AppRoute.Home.route) {
@@ -61,6 +61,8 @@ fun BottomNavHost(
                 val viewModel = hiltViewModel<EnterDetailsViewModel>().apply {
                     SetSharedData(it)
                 }
+                viewModel.CameraLauncher()
+                viewModel.DocsLauncher()
                 EnterDetailsScreen(
                     state = viewModel.state.value,
                     event = viewModel::event
