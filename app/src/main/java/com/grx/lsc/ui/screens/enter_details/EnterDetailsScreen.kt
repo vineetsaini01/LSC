@@ -81,10 +81,10 @@ fun EnterDetailsScreen(
             hasCamPermission = granted
         })
     LaunchedEffect(true) {
-        launcher.launch( Manifest.permission.ACCESS_FINE_LOCATION )
+        launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    if(hasCamPermission){
+    if (hasCamPermission) {
         Column(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
@@ -133,9 +133,9 @@ fun EnterDetailsScreen(
                 )
             }
 
-            state.bitmaps.forEach {
-                ShowImageItem(title = "mkdnn") {
-                    event(EnterDetailsContract.Event.OnPressedRemoveBitmap(it))
+            state.uris.forEachIndexed { index, uri ->
+                ShowImageItem(title = "Docs ${index + 1}") {
+                    event(EnterDetailsContract.Event.OnPressedRemoveBitmap(uri))
                 }
             }
 
@@ -164,9 +164,8 @@ fun EnterDetailsScreen(
 
         }
     }
-    
-    Loading(isLoading = state.isLoading)
 
+    Loading(isLoading = state.isLoading)
 
 
 }

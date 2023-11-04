@@ -1,6 +1,6 @@
 package com.grx.lsc.utils
 
-import android.app.Activity
+import android.content.Context
 import android.net.Uri
 import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -11,7 +11,7 @@ import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 
-class GetMultipartPart @Inject constructor(@ApplicationContext private val activity: Activity) {
+class GetMultipartPart @Inject constructor(@ApplicationContext private val context: Context) {
 
     operator fun invoke(
         uri: Uri,
@@ -23,15 +23,14 @@ class GetMultipartPart @Inject constructor(@ApplicationContext private val activ
     }
 
     private fun getFile(uri: Uri): File {
+
         val tsLong = System.currentTimeMillis() / 1000
         val child = tsLong.toString().plus(".png")
-        val fileDir = activity.applicationContext?.filesDir
+        val fileDir = context.filesDir
         val file = File(fileDir, child)
-        val inputStream = activity.contentResolver?.openInputStream(uri)
+        val inputStream = context.contentResolver.openInputStream(uri)
         val outputStream = FileOutputStream(file)
         inputStream!!.copyTo(outputStream)
         return file
     }
-
-
 }

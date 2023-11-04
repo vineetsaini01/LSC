@@ -10,7 +10,9 @@ import com.grx.lsc.mapper.Mapper.toDriverJobDetailsRes
 import com.grx.lsc.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
@@ -126,12 +128,14 @@ class RepositoryImpl @Inject constructor(
     ): Flow<Resource<JobStatusRes?>> = flow {
         emit(Resource.Loading())
         val remoteData = try {
+            val sealNoNew = RequestBody.create("text/plain".toMediaType(), sealNo)
+
             apiHelper.driverJobStore(
                 token = token,
-                sealNo = sealNo,
+                sealNo = sealNoNew,
                 id = id,
                 containerNo = containerNo,
-                imagesVideos = imagesVideos,
+                images = imagesVideos,
                 latitude = latitude,
                 longitude = longitude
             )

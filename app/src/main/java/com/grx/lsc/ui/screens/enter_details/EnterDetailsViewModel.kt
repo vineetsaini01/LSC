@@ -19,6 +19,8 @@ import com.grx.lsc.domain.use_case.shared_pref.GetTokenUseCase
 import com.grx.lsc.ui.navigation.BottomNavigator
 import com.grx.lsc.ui.navigation.sharedViewModel
 import com.grx.lsc.ui.screens.home.HomeViewModel
+import com.grx.lsc.utils.BitmapToUri
+import com.grx.lsc.utils.GetMultipartPart
 import com.grx.lsc.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,9 +34,10 @@ import javax.inject.Inject
 class EnterDetailsViewModel @Inject constructor(
     private val driverJobStoreUseCase: DriverJobStoreUseCase,
     private val bottomNavigator: BottomNavigator,
-    private val buildImageBodyPart: BuildImageBodyPart,
     private val getTokenUseCase: GetTokenUseCase,
     private val getCurrentLocationUseCase: GetCurrentLocationUseCase,
+    private val bitmapToUri: BitmapToUri,
+    private val getMultipartPart: GetMultipartPart,
 ) :
     BaseViewModel<EnterDetailsContract.Event, EnterDetailsContract.State>(EnterDetailsContract.State()) {
 
@@ -46,11 +49,15 @@ class EnterDetailsViewModel @Inject constructor(
             contract = ActivityResultContracts.TakePicturePreview(),
         ) {
             it?.let {
-                val mutableList: MutableList<Bitmap> = state.value.bitmaps.toMutableList()
-                mutableList.add(it)
-                setState {
-                    copy(bitmaps = mutableList)
+                bitmapToUri(it)?.let {uri->
+                    val mutableUris: MutableList<Uri> = state.value.uris.toMutableList()
+                    mutableUris.add(uri)
+                    setState {
+                        copy(uris = mutableUris)
+                    }
+
                 }
+
             }
         }
         setState {
@@ -67,7 +74,14 @@ class EnterDetailsViewModel @Inject constructor(
 
         val launcher: ManagedActivityResultLauncher<Intent, ActivityResult> =
             rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                val uri: Uri? =it.data?.data
+                it.data?.data?.let {uri->
+                    val mutableUris: MutableList<Uri> = state.value.uris.toMutableList()
+                    mutableUris.add(uri)
+                    setState {
+                        copy(uris = mutableUris)
+                    }
+
+                }
             }
 
         setState {
@@ -117,8 +131,8 @@ class EnterDetailsViewModel @Inject constructor(
                 EnterDetailsContract.Event.OnPressedDoneBtn -> {
 
                     val multipartBodyPartList: List<MultipartBody.Part> =
-                        state.value.bitmaps.map { bitmap ->
-                            buildImageBodyPart(fileName = "", bitmap = bitmap)
+                        state.value.uris.map { uri ->
+                            getMultipartPart(uri=uri)
                         }.toList()
 
                     driverJobStore(multipartBodyPartList = multipartBodyPartList)
@@ -140,10 +154,10 @@ class EnterDetailsViewModel @Inject constructor(
 
                 is EnterDetailsContract.Event.OnPressedRemoveBitmap -> {
 
-                    val mutableList: MutableList<Bitmap> = state.value.bitmaps.toMutableList()
-                    mutableList.remove(reqBitmap)
+                    val mutableList: MutableList<Uri> = state.value.uris.toMutableList()
+                    mutableList.remove(reqUri)
                     setState {
-                        copy(bitmaps = mutableList)
+                        copy(uris = mutableList)
                     }
                 }
             }

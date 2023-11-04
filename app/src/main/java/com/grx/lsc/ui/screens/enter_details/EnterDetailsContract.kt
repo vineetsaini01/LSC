@@ -3,6 +3,7 @@ package com.grx.lsc.ui.screens.enter_details
 import android.content.Intent
 import android.graphics.Bitmap
 import android.location.Location
+import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
 import com.grx.lsc.domain.models.DriverJobDetailsRes
@@ -19,7 +20,7 @@ class EnterDetailsContract {
         object OnPressedUploadImage : Event()
         object OnPressedUploadDoc : Event()
 
-        data class OnPressedRemoveBitmap(val reqBitmap: Bitmap) : Event()
+        data class OnPressedRemoveBitmap(val reqUri: Uri) : Event()
     }
 
     data class State(
@@ -29,7 +30,7 @@ class EnterDetailsContract {
         var driverJobDetailsRes: DriverJobDetailsRes? = null,
         var cameraLauncher: ManagedActivityResultLauncher<Void?, Bitmap?>? = null,
         val docLauncher: ManagedActivityResultLauncher<Intent, ActivityResult>? = null,
-        val bitmaps: List<Bitmap> = listOf(),
+        val uris: List<Uri> = listOf(),
         val location: Location? = null,
     )
 
