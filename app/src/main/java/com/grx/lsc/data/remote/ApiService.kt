@@ -51,10 +51,10 @@ interface ApiService {
     suspend fun driverJobStore(
         @Header("Authorization") token: String,
         @Part("seal_no") sealNo: RequestBody,
-        @Part("id") id: String,
-        @Part("container_no") containerNo: String,
-        @Part("latitude") latitude: String,
-        @Part("longitude") longitude: String,
+        @Part("id") id: RequestBody,
+        @Part("container_no") containerNo: RequestBody,
+        @Part("latitude") latitude: RequestBody,
+        @Part("longitude") longitude: RequestBody,
         @Part images: List<MultipartBody.Part>,
     ): JobStatusResDTO
 

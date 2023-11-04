@@ -14,6 +14,8 @@ import com.grx.lsc.ui.screens.home.HomeScreen
 import com.grx.lsc.ui.screens.home.HomeViewModel
 import com.grx.lsc.ui.screens.qr_code.QRScannerScreen
 import com.grx.lsc.ui.screens.qr_code.QRViewModel
+import com.grx.lsc.ui.screens.reached.ReachedScreen
+import com.grx.lsc.ui.screens.reached.ReachedViewModel
 
 @Composable
 fun BottomNavHost(
@@ -28,7 +30,7 @@ fun BottomNavHost(
         startDestination = AppRoute.HomeRoute.route,
     ) {
         navigation(
-            startDestination = AppRoute.EnterDetails.route,
+            startDestination = AppRoute.Home.route,
             route = AppRoute.HomeRoute.route
         ) {
             composable(AppRoute.Home.route) {
@@ -60,10 +62,19 @@ fun BottomNavHost(
             composable(AppRoute.EnterDetails.route) {
                 val viewModel = hiltViewModel<EnterDetailsViewModel>().apply {
                     SetSharedData(it)
+                    CameraLauncher()
+                    DocsLauncher()
                 }
-                viewModel.CameraLauncher()
-                viewModel.DocsLauncher()
                 EnterDetailsScreen(
+                    state = viewModel.state.value,
+                    event = viewModel::event
+                )
+            }
+            composable(AppRoute.Reached.route) {
+                val viewModel = hiltViewModel<ReachedViewModel>().apply {
+                    SetSharedData(it)
+                }
+                ReachedScreen(
                     state = viewModel.state.value,
                     event = viewModel::event
                 )

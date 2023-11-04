@@ -16,6 +16,7 @@ import com.grx.lsc.core.base_view_model.BaseViewModel
 import com.grx.lsc.domain.use_case.location.GetCurrentLocationUseCase
 import com.grx.lsc.domain.use_case.networks.DriverJobStoreUseCase
 import com.grx.lsc.domain.use_case.shared_pref.GetTokenUseCase
+import com.grx.lsc.ui.navigation.AppRoute
 import com.grx.lsc.ui.navigation.BottomNavigator
 import com.grx.lsc.ui.navigation.sharedViewModel
 import com.grx.lsc.ui.screens.home.HomeViewModel
@@ -49,7 +50,7 @@ class EnterDetailsViewModel @Inject constructor(
             contract = ActivityResultContracts.TakePicturePreview(),
         ) {
             it?.let {
-                bitmapToUri(it)?.let {uri->
+                bitmapToUri(it)?.let { uri ->
                     val mutableUris: MutableList<Uri> = state.value.uris.toMutableList()
                     mutableUris.add(uri)
                     setState {
@@ -74,7 +75,7 @@ class EnterDetailsViewModel @Inject constructor(
 
         val launcher: ManagedActivityResultLauncher<Intent, ActivityResult> =
             rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-                it.data?.data?.let {uri->
+                it.data?.data?.let { uri ->
                     val mutableUris: MutableList<Uri> = state.value.uris.toMutableList()
                     mutableUris.add(uri)
                     setState {
@@ -132,7 +133,7 @@ class EnterDetailsViewModel @Inject constructor(
 
                     val multipartBodyPartList: List<MultipartBody.Part> =
                         state.value.uris.map { uri ->
-                            getMultipartPart(uri=uri)
+                            getMultipartPart(uri = uri)
                         }.toList()
 
                     driverJobStore(multipartBodyPartList = multipartBodyPartList)
@@ -170,7 +171,8 @@ class EnterDetailsViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             driverJobStoreUseCase(
-                id = "1",
+              //  id = "1",
+                id = state.value.driverJobDetailsRes!!.data!!.id!!.toString(),
                 containerNo = state.value.containerNo,
                 imagesVideos = multipartBodyPartList,
                 sealNo = state.value.sealNo,
@@ -183,6 +185,9 @@ class EnterDetailsViewModel @Inject constructor(
                         is Resource.Success -> {
                             setState {
                                 copy(isLoading = false)
+                            }
+                            if (resource.data?.message == "Data updated successfully") {
+                                bottomNavigator.navController.navigate(AppRoute.Reached.route)
                             }
                         }
 

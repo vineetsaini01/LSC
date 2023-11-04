@@ -7,7 +7,6 @@ import com.grx.lsc.domain.models.VerifyCodeRes
 import com.grx.lsc.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
-import retrofit2.http.Field
 
 interface Repository {
 
@@ -22,6 +21,7 @@ interface Repository {
         id: String,
         status: String,
         token: String,
+        reason: String?=null,
     ): Flow<Resource<JobStatusRes?>>
 
     suspend fun uploadVehicleNumber(

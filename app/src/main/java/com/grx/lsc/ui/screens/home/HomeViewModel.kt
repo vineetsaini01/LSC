@@ -1,13 +1,8 @@
 package com.grx.lsc.ui.screens.home
 
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.grx.lsc.core.base_view_model.BaseViewModel
-import com.grx.lsc.core.base_view_model.BaseViewModelOld
-import com.grx.lsc.domain.models.DriverJobDetailsRes
 import com.grx.lsc.domain.repository.Repository
 import com.grx.lsc.domain.use_case.shared_pref.GetTokenUseCase
 import com.grx.lsc.domain.use_case.shared_pref.LogoutUseCase
@@ -148,9 +143,9 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             repository.drierJobStatus(
-                token = "Bearer " + getTokenUseCase(),
                 id = state.value.driverJobDetailsRes!!.data!!.id!!.toString(),
-                status = status
+                status = status,
+                token = "Bearer " + getTokenUseCase(),
             ).onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {

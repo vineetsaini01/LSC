@@ -81,10 +81,11 @@ class RepositoryImpl @Inject constructor(
         id: String,
         status: String,
         token: String,
+        reason: String?,
     ): Flow<Resource<JobStatusRes?>> = flow {
         emit(Resource.Loading())
         val remoteData = try {
-            apiHelper.drierJobStatus(id = id, status = status, token = token)
+            apiHelper.drierJobStatus(id = id, status = status, token = token, reason = reason)
         } catch (e: HttpException) {
             emit(Resource.Error(message = "An unexpected error occurred"))
             null
@@ -128,16 +129,20 @@ class RepositoryImpl @Inject constructor(
     ): Flow<Resource<JobStatusRes?>> = flow {
         emit(Resource.Loading())
         val remoteData = try {
+            val idNew = RequestBody.create("text/plain".toMediaType(), id)
             val sealNoNew = RequestBody.create("text/plain".toMediaType(), sealNo)
+            val containerNew = RequestBody.create("text/plain".toMediaType(), containerNo)
+            val latitudeNew = RequestBody.create("text/plain".toMediaType(), latitude)
+            val longitudeNew = RequestBody.create("text/plain".toMediaType(), longitude)
 
             apiHelper.driverJobStore(
                 token = token,
                 sealNo = sealNoNew,
-                id = id,
-                containerNo = containerNo,
+                id = idNew,
+                containerNo = containerNew,
                 images = imagesVideos,
-                latitude = latitude,
-                longitude = longitude
+                latitude = latitudeNew,
+                longitude = longitudeNew
             )
         } catch (e: HttpException) {
             emit(Resource.Error(message = "An unexpected error occurred"))

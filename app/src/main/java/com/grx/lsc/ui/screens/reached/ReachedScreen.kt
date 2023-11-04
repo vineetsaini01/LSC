@@ -2,7 +2,6 @@ package com.grx.lsc.ui.screens.reached
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,14 +16,10 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -46,28 +41,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.grx.lsc.R
 import com.grx.lsc.ui.components.AlertDialogWrapper
 import com.grx.lsc.ui.components.AlertDialogWrapperWithTopBar
 import com.grx.lsc.ui.components.BorderButton
+import com.grx.lsc.ui.components.Loading
 import com.grx.lsc.ui.components.RoundedButton
 import com.grx.lsc.ui.components.SmallDetails
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ReachedScreen(navController: NavHostController) {
-
-    var openDialog by remember {
-        mutableStateOf(false)
-    }
-
-    var openDialog2 by remember {
-        mutableStateOf(false)
-    }
-    var isLoading by remember {
-        mutableStateOf(false)
-    }
+fun ReachedScreen(
+    state: ReachedContract.State,
+    event: (event: ReachedContract.Event) -> Unit,
+) {
 
     Box(
         modifier = Modifier
@@ -95,7 +81,7 @@ fun ReachedScreen(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                if (isLoading) {
+                if (state.isWaitingLoading) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -178,7 +164,7 @@ fun ReachedScreen(navController: NavHostController) {
                     drawable = R.drawable.delivery, text = "Trucks with awnings"
                 )
 
-                if (!isLoading) {
+                if (!state.isWaitingLoading) {
 
                     Row(
                         modifier = Modifier
@@ -192,7 +178,7 @@ fun ReachedScreen(navController: NavHostController) {
                                 .fillMaxWidth(),
                             title = "Delay",
                             onClick = {
-                                      openDialog2=true
+                                event(ReachedContract.Event.OnPressedDelayBtn)
                             },
                             borderColor = Color(0xFFF60000)
                         )
@@ -203,7 +189,7 @@ fun ReachedScreen(navController: NavHostController) {
                                 .fillMaxWidth(),
                             title = "Reached",
                             onClick = {
-                                openDialog = true
+                                event(ReachedContract.Event.OnPressedReachedBtn)
                             },
                             borderColor = Color(0xFF00920F)
                         )
@@ -232,129 +218,189 @@ fun ReachedScreen(navController: NavHostController) {
                                 .fillMaxWidth(),
                             title = "Resume Trip",
                             onClick = {
-                                isLoading = false
-                                openDialog = false
                             },
                             borderColor = Color(0xFF00920F)
                         )
                     }
                 }
 
-                if (openDialog) {
-                    AlertDialogWrapper(
-                        onDismissRequest = {
-                            openDialog = false
-                        }
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-
-                            RoundedButton(
-                                modifier = Modifier.fillMaxWidth(),
-                                title = "Container Grounded",
-                                backgroundColor = Color(0xFF0C831F),
-                                onClick = { }
-                            )
-
-                            RoundedButton(
-                                modifier = Modifier.fillMaxWidth(),
-                                title = "Trailer Cut",
-                                backgroundColor = Color(0xFFFF5E5E),
-                                onClick = { }
-                            )
-
-                            TextButton(onClick = {
-                                openDialog = false
-                                isLoading = true
-                                //navController.navigate("")
-                            }) {
-                                Text(
-                                    text = "Skip",
-                                    style = TextStyle(
-                                        fontSize = 16.sp,
-                                        lineHeight = 17.95.sp,
-                                        fontWeight = FontWeight(700),
-                                        color = Color(0xFF1E5FAA),
-                                        textAlign = TextAlign.Center,
-                                        letterSpacing = 0.32.sp,
-                                        textDecoration = TextDecoration.Underline,
-                                    )
-                                )
-                            }
-
-                        }
+                ShowReachedAlertDialog(
+                    showReachedAlert = state.showReachedAlert,
+                    onDismissRequest = {
+                        event(ReachedContract.Event.OnDismissReachedAlert)
+                    },
+                    onPressedContainerGrounded = {
+                        event(
+                            ReachedContract.Event.UpdateStatus(status = "Container Grounded")
+                        )
+                    },
+                    onPressedTrailerCut = {
+                        event(
+                            ReachedContract.Event.UpdateStatus(status = "Trailer Cut")
+                        )
+                    },
+                    onPressedSkip = {
+                        event(ReachedContract.Event.OnPressedSkipBtn)
                     }
-                }
+                )
 
-                if(openDialog2){
-                    AlertDialogWrapperWithTopBar(
-                        title = "Select Delay Reason",
-                        onDismissRequest = { openDialog = false },
-                    ) {
-                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
-                            RadioButtonSample()
-
-                            OutlinedTextField(
-                                modifier = Modifier.fillMaxWidth(),
-                                value = "",
-                                onValueChange = {  },
-                                label = { Text("Enter Text here") }
+                ShowDelayAlertDialog(
+                    showDelayAlert = state.showDelayAlert,
+                    onDismissRequest = {
+                        event(ReachedContract.Event.OnDismissDelayAlert)
+                    },
+                    onPressedDoneBtn = {
+                        event(
+                            ReachedContract.Event.UpdateStatus(
+                                reason = it,
+                                status = "delay"
                             )
-
-                            BorderButton(
-                                modifier = Modifier.fillMaxWidth(),
-                                title = "Done",
-                                borderColor = Color(0xFF0C831F),
-                                onClick = { openDialog2=false }
-                            )
-                        }
+                        )
                     }
-                }
+                )
+
 
                 Spacer(modifier = Modifier.height(10.dp))
             }
 
 
         }
+
+        Loading(isLoading = state.isLoading)
     }
 
 }
 
 @Composable
-fun RadioButtonSample() {
-    val radioOptions = listOf("Container not received", "Traffic jam", "Vehicle breakdown","Tire puncture","Other")
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(radioOptions[1] ) }
-    Column {
-        radioOptions.forEach { text ->
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .selectable(
-                        selected = (text == selectedOption),
-                        onClick = {
-                            onOptionSelected(text)
-                        }
-                    )
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = CenterVertically
+fun ShowReachedAlertDialog(
+    showReachedAlert: Boolean,
+    onDismissRequest: () -> Unit,
+    onPressedContainerGrounded: () -> Unit,
+    onPressedTrailerCut: () -> Unit,
+    onPressedSkip: () -> Unit,
+) {
+    if (showReachedAlert) {
+        AlertDialogWrapper(
+            onDismissRequest = onDismissRequest
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                RadioButton(
-                    selected = (text == selectedOption),
-                    onClick = { onOptionSelected(text) },
-                    colors = RadioButtonDefaults.colors(
-                        selectedColor = Color(0xFF0C831F),
-                        unselectedColor = Color.LightGray,
-                    )
+
+                RoundedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Container Grounded",
+                    backgroundColor = Color(0xFF0C831F),
+                    onClick = onPressedContainerGrounded
                 )
-                Text(
-                    text = text,
-                    modifier = Modifier.padding(start = 16.dp)
+
+                RoundedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Trailer Cut",
+                    backgroundColor = Color(0xFFFF5E5E),
+                    onClick = onPressedTrailerCut
+                )
+
+                TextButton(
+                    onClick = onPressedSkip,
+                    content = {
+                        Text(
+                            text = "Skip",
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                lineHeight = 17.95.sp,
+                                fontWeight = FontWeight(700),
+                                color = Color(0xFF1E5FAA),
+                                textAlign = TextAlign.Center,
+                                letterSpacing = 0.32.sp,
+                                textDecoration = TextDecoration.Underline,
+                            )
+                        )
+                    }
+                )
+
+            }
+        }
+    }
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ShowDelayAlertDialog(
+    showDelayAlert: Boolean,
+    onDismissRequest: () -> Unit,
+    onPressedDoneBtn: (reason: String) -> Unit,
+) {
+
+    if (showDelayAlert) {
+        var selectedOption by remember {
+            mutableStateOf(ReachedContract.delayListItems.first())
+        }
+        var otherText by remember {
+            mutableStateOf("")
+        }
+        AlertDialogWrapperWithTopBar(
+            title = "Select Delay Reason",
+            onDismissRequest = onDismissRequest,
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+                ReachedContract.delayListItems.forEach { text ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .selectable(
+                                selected = (text == selectedOption),
+                                onClick = {
+                                    selectedOption = text
+                                }
+                            ),
+                        verticalAlignment = CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = (text == selectedOption),
+                            onClick = {
+                                selectedOption = text
+                            },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = Color(0xFF0C831F),
+                                unselectedColor = Color.LightGray,
+                            )
+                        )
+                        Text(
+                            text = text,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                }
+
+                OutlinedTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    value = otherText,
+                    enabled = selectedOption == "Other",
+                    onValueChange = { otherText = it },
+                    label = { Text("Enter Text here") }
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                BorderButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = "Done",
+                    borderColor = Color(0xFF0C831F),
+                    onClick = {
+                        onPressedDoneBtn(
+                            if (selectedOption == "Other") otherText else selectedOption
+                        )
+                    }
                 )
             }
         }
     }
+
 }
+
 
