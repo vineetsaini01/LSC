@@ -77,7 +77,9 @@ class LoginViewModel @Inject constructor(
     private fun sendVerificationCode() {
         viewModelScope.launch(Dispatchers.IO) {
 
-            sendVerificationCodeUseCase(mobile = "+91${state.value.mobileNo}").onEach { resource ->
+            sendVerificationCodeUseCase(
+                mobile = LoginContract.dialingCode + state.value.mobileNo
+            ).onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         if (resource.data?.message == "Verification code sent") appNavigator.navController.navigate(
@@ -112,7 +114,8 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             verifyCodeUseCase(
-                verificationCode = state.value.mobileOtp, mobile = "+91${state.value.mobileNo}"
+                verificationCode = state.value.mobileOtp,
+                mobile = LoginContract.dialingCode + state.value.mobileNo
             ).onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {

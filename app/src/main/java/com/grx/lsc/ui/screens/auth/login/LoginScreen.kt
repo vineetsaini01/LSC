@@ -52,7 +52,7 @@ fun LoginScreen(
 
         CustomTextField(
             value = state.mobileNo,
-            leadingIcon = { Text("+91") },
+            leadingIcon = { Text(LoginContract.dialingCode) },
             onValueChange = {
                 onEvent(LoginContract.Event.OnChangedMobileNumber(it))
             },

@@ -2,6 +2,11 @@ package com.grx.lsc.ui.screens.auth.login
 
 
 class LoginContract {
+
+    companion object{
+        const val dialingCode = "+971"
+    }
+
     sealed class Event {
         data class OnChangedMobileNumber(val newMobileNo: String) : Event()
         data class OnChangedMobileOTP(val newMobileOTP: String) : Event()
@@ -11,10 +16,10 @@ class LoginContract {
     }
 
     data class State(
-        val mobileNo: String="",
-        val mobileOtp: String="",
-        val mobileError: String?=null,
-        val mobileOTPError: String?=null,
-        val isLoading: Boolean=false,
+        val mobileNo: String = "",
+        val mobileOtp: String = "",
+        val mobileError: String? = null,
+        val mobileOTPError: String? = null,
+        val isLoading: Boolean = false,
     )
 }

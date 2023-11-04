@@ -77,7 +77,7 @@ fun LoginOtpScreen(
             )
 
             Text(
-                text = "We have sent a verification code to +91-${state.mobileNo}",
+                text = "We have sent a verification code to ${LoginContract.dialingCode}-${state.mobileNo}",
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp
             )
