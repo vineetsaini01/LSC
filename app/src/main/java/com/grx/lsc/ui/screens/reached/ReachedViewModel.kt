@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavBackStackEntry
 import com.grx.lsc.core.base_view_model.BaseViewModel
+import com.grx.lsc.domain.models.DriverJobDetailsRes
 import com.grx.lsc.domain.use_case.networks.UpdateStatusUseCase
 import com.grx.lsc.domain.use_case.shared_pref.GetTokenUseCase
 import com.grx.lsc.ui.navigation.AppRoute
@@ -29,12 +30,8 @@ class ReachedViewModel @Inject constructor(
 ) :
     BaseViewModel<ReachedContract.Event, ReachedContract.State>(ReachedContract.State()) {
 
-    @Composable
-    fun SetSharedData(navBackStackEntry: NavBackStackEntry) {
-        val driverJobDetailsRes =
-            navBackStackEntry
-                .sharedViewModel<HomeViewModel>(bottomNavigator.navController)
-                .state.value.driverJobDetailsRes
+
+    fun setSharedData(driverJobDetailsRes: DriverJobDetailsRes) {
         setState {
             copy(driverJobDetailsRes = driverJobDetailsRes)
         }

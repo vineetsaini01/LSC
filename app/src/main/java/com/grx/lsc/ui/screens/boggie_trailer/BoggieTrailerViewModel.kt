@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavBackStackEntry
 import com.grx.lsc.core.base_view_model.BaseViewModel
 import com.grx.lsc.core.base_view_model.BaseViewModelOld
+import com.grx.lsc.domain.models.DriverJobDetailsRes
 import com.grx.lsc.ui.navigation.AppRoute
 import com.grx.lsc.ui.navigation.BottomNavigator
 import com.grx.lsc.ui.navigation.sharedViewModel
@@ -19,12 +20,9 @@ class BoggieTrailerViewModel @Inject constructor(
     private val bottomNavigator: BottomNavigator,
 ) : BaseViewModel<BoggieTrailerContract.Event, BoggieTrailerContract.State>(BoggieTrailerContract.State()) {
 
-    @Composable
-    fun SetSharedData(navBackStackEntry: NavBackStackEntry) {
-        val driverJobDetailsRes =
-            navBackStackEntry
-                .sharedViewModel<HomeViewModel>(bottomNavigator.navController)
-                .state.value.driverJobDetailsRes
+
+
+    fun setSharedData(driverJobDetailsRes: DriverJobDetailsRes) {
         setState {
             copy(driverJobDetailsRes = driverJobDetailsRes)
         }

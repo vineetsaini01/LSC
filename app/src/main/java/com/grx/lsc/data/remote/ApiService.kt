@@ -46,6 +46,15 @@ interface ApiService {
         @Field("id") id: String,
     ): JobStatusResDTO
 
+    @FormUrlEncoded
+    @POST("driver-get-vehicle-number")
+    suspend fun changeTrailerBoggie(
+        @Header("Authorization") token: String,
+        @Field("trailer_number") trailerNumber: String,
+        @Field("boggie_number") boggieNumber: String,
+        @Field("id") id: String,
+    ): JobStatusResDTO
+
     @Multipart
     @POST("driver-job-store")
     suspend fun driverJobStore(

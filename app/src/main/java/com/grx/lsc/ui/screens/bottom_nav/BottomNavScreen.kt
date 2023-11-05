@@ -5,11 +5,13 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -26,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.rememberNavController
 import com.grx.lsc.R
 import com.grx.lsc.ui.navigation.BottomNavHost
 
@@ -35,8 +36,8 @@ import com.grx.lsc.ui.navigation.BottomNavHost
 @Composable
 fun BottomNavScreen(viewModel: BottomViewModel = hiltViewModel()) {
     viewModel.bottomNavigator.SetNavController()
-    LaunchedEffect(Unit){
-        viewModel.initData()
+    LaunchedEffect(Unit) {
+        viewModel.setDestinationChangedListener()
     }
     Scaffold(
         topBar = {
@@ -80,10 +81,22 @@ fun BottomNavScreen(viewModel: BottomViewModel = hiltViewModel()) {
         },
 
         ) {
-        Box(modifier = Modifier.padding(it)) {
-            BottomNavHost(
-                bottomNavigator = viewModel.bottomNavigator
-            )
+        Box(modifier = Modifier
+            .padding(it)
+            .fillMaxSize()) {
+
+            if (viewModel.isLoading) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                viewModel.driverJobDetailsRes?.let {
+                    BottomNavHost(
+                        bottomNavigator = viewModel.bottomNavigator,
+                        driverJobDetailsRes = it
+                    )
+                }
+            }
         }
 
     }

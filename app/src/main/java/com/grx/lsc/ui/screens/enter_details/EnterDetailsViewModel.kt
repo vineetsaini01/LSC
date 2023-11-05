@@ -13,6 +13,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavBackStackEntry
 import com.grx.lsc.core.BuildImageBodyPart
 import com.grx.lsc.core.base_view_model.BaseViewModel
+import com.grx.lsc.domain.models.DriverJobDetailsRes
 import com.grx.lsc.domain.use_case.location.GetCurrentLocationUseCase
 import com.grx.lsc.domain.use_case.networks.DriverJobStoreUseCase
 import com.grx.lsc.domain.use_case.shared_pref.GetTokenUseCase
@@ -90,12 +91,7 @@ class EnterDetailsViewModel @Inject constructor(
         }
     }
 
-    @Composable
-    fun SetSharedData(navBackStackEntry: NavBackStackEntry) {
-        val driverJobDetailsRes =
-            navBackStackEntry
-                .sharedViewModel<HomeViewModel>(bottomNavigator.navController)
-                .state.value.driverJobDetailsRes
+    fun setSharedData(driverJobDetailsRes: DriverJobDetailsRes) {
         setState {
             copy(driverJobDetailsRes = driverJobDetailsRes)
         }
