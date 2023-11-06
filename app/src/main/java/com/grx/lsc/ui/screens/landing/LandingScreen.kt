@@ -25,15 +25,11 @@ import androidx.navigation.NavHostController
 import com.grx.lsc.R
 import com.grx.lsc.ui.components.AlertDialogWrapperWithTopBar
 import com.grx.lsc.ui.components.RoundedButton
-import com.grx.lsc.ui.navigation.AppNavigator
 import com.grx.lsc.ui.navigation.AppRoute
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LandingScreen (
-    appNavigator: AppNavigator,
-) {
+fun LandingScreen(appNavController: NavHostController) {
 
     var openDialog by remember {
         mutableStateOf(false)
@@ -102,7 +98,7 @@ fun LandingScreen (
                 modifier = Modifier.fillMaxWidth(),
                 title = "Log In",
                 onClick = {
-                    appNavigator.navController.navigate(AppRoute.Login.route)
+                    appNavController.navigate(AppRoute.Login.route)
                 }
             )
 

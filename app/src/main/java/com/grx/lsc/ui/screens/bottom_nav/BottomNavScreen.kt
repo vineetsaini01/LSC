@@ -25,9 +25,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.rememberNavController
 import com.grx.lsc.R
 import com.grx.lsc.ui.navigation.BottomNavHost
 
@@ -35,10 +37,20 @@ import com.grx.lsc.ui.navigation.BottomNavHost
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavScreen(viewModel: BottomViewModel = hiltViewModel()) {
-    viewModel.bottomNavigator.SetNavController()
+
+    val navController = rememberNavController()
+    val owner = LocalLifecycleOwner.current
+
     LaunchedEffect(Unit) {
-        viewModel.setDestinationChangedListener()
+        viewModel.apply {
+            bottomNavigator.setNavController(
+                navController = navController,
+                owner = owner
+            )
+            setDestinationChangedListener()
+        }
     }
+
     Scaffold(
         topBar = {
             if (!viewModel.hasShowTopBottomNav)
@@ -81,9 +93,11 @@ fun BottomNavScreen(viewModel: BottomViewModel = hiltViewModel()) {
         },
 
         ) {
-        Box(modifier = Modifier
-            .padding(it)
-            .fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+        ) {
 
             if (viewModel.isLoading) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

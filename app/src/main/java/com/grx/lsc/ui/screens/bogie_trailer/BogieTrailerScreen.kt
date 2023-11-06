@@ -1,4 +1,4 @@
-package com.grx.lsc.ui.screens.boggie_trailer
+package com.grx.lsc.ui.screens.bogie_trailer
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,10 +19,6 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,14 +34,12 @@ import com.grx.lsc.ui.components.AlertDialogWrapper
 import com.grx.lsc.ui.components.AlertDialogWrapperWithTopBar
 import com.grx.lsc.ui.components.CustomTextField
 import com.grx.lsc.ui.components.RoundedButton
-import com.grx.lsc.ui.screens.auth.login.LoginContract
-import com.grx.lsc.ui.screens.qr_code.QRCodeContract
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BoggieTrailerScreen(
-    state: BoggieTrailerContract.State,
-    event: (event: BoggieTrailerContract.Event) -> Unit,
+fun BogieTrailerScreen(
+    state: BogieTrailerContract.State,
+    event: (event: BogieTrailerContract.Event) -> Unit,
 ) {
 
     Scaffold(
@@ -55,7 +49,7 @@ fun BoggieTrailerScreen(
                 Button(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    onClick = { event(BoggieTrailerContract.Event.OnPressedYesConfirmBtn) },
+                    onClick = { event(BogieTrailerContract.Event.OnPressedYesConfirmBtn) },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF00920F),
@@ -71,7 +65,7 @@ fun BoggieTrailerScreen(
                     modifier = Modifier
                         .fillMaxWidth(),
                     onClick = {
-                        event(BoggieTrailerContract.Event.OnPressedChangeNo)
+                        event(BogieTrailerContract.Event.OnPressedChangeNo)
                     },
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -89,10 +83,10 @@ fun BoggieTrailerScreen(
         Column(modifier = Modifier.padding(it)) {
 
             TabRow(selectedTabIndex = state.tabIndex) {
-                BoggieTrailerContract.tabLabelList.forEachIndexed { index, title ->
+                BogieTrailerContract.tabLabelList.forEachIndexed { index, title ->
                     Tab(text = { Text(title) },
                         selected = state.tabIndex == index,
-                        onClick = { event(BoggieTrailerContract.Event.OnChangedTabIndex(index)) }
+                        onClick = { event(BogieTrailerContract.Event.OnChangedTabIndex(index)) }
                     )
                 }
             }
@@ -137,7 +131,7 @@ fun BoggieTrailerScreen(
                 AlertDialogWrapperWithTopBar(
                     title = "Change Boggie/Trailer Number",
                     onDismissRequest = {
-                        event(BoggieTrailerContract.Event.OnDismissRequestAlert)
+                        event(BogieTrailerContract.Event.OnDismissRequestAlert)
                     }
                 ) {
                     Column(
@@ -151,10 +145,10 @@ fun BoggieTrailerScreen(
                             trailingIcon = {
                                 RadioButton(
                                     selected = state.hasBoggieNumberEnabled,
-                                    onClick = { event(BoggieTrailerContract.Event.OnClickBoggieNumberEnabled) })
+                                    onClick = { event(BogieTrailerContract.Event.OnClickBoggieNumberEnabled) })
                             },
                             onValueChange = {
-                                event(BoggieTrailerContract.Event.OnChangedBoggieNumber(it))
+                                event(BogieTrailerContract.Event.OnChangedBoggieNumber(it))
                             },
                             label = "Boggie Number"
                         )
@@ -166,10 +160,10 @@ fun BoggieTrailerScreen(
                             trailingIcon = {
                                 RadioButton(
                                     selected = state.hasTrailerNumberEnabled,
-                                    onClick = { event(BoggieTrailerContract.Event.OnClickTrailerNumberEnabled) })
+                                    onClick = { event(BogieTrailerContract.Event.OnClickTrailerNumberEnabled) })
                             },
                             onValueChange = {
-                                event(BoggieTrailerContract.Event.OnChangedTrailerNumber(it))
+                                event(BogieTrailerContract.Event.OnChangedTrailerNumber(it))
                             },
                             label = "Trailer Number"
                         )

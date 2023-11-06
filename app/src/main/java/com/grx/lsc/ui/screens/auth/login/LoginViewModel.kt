@@ -67,7 +67,7 @@ class LoginViewModel @Inject constructor(
                 }
 
                 is LoginContract.Event.OnBackPress -> {
-                    appNavigator.navController.popBackStack()
+                    appNavigator.popBackStack()
                 }
             }
         }
@@ -82,8 +82,8 @@ class LoginViewModel @Inject constructor(
             ).onEach { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        if (resource.data?.message == "Verification code sent") appNavigator.navController.navigate(
-                            AppRoute.LoginOtp.route
+                        if (resource.data?.message == "Verification code sent") appNavigator.navigate(
+                            AppRoute.LoginOtp
                         )
                         else setState {
                             copy(mobileError = resource.data?.message)
@@ -121,8 +121,8 @@ class LoginViewModel @Inject constructor(
                     is Resource.Success -> {
                         if (resource.data?.message == "Login successful") {
                             saveTokenUseCase(resource.data.token!!)
-                            appNavigator.navController.popBackStack(AppRoute.AuthRoute.route, true)
-                            appNavigator.navController.navigate(AppRoute.BottomNavRoute.route)
+                            appNavigator.popBackStack(AppRoute.AuthRoute, true)
+                            appNavigator.navigate(AppRoute.BottomNavRoute)
                         } else {
                             setState {
                                 copy(

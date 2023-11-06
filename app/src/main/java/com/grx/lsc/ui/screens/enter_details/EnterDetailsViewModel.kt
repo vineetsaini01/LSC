@@ -1,7 +1,6 @@
 package com.grx.lsc.ui.screens.enter_details
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -10,8 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavBackStackEntry
-import com.grx.lsc.core.BuildImageBodyPart
 import com.grx.lsc.core.base_view_model.BaseViewModel
 import com.grx.lsc.domain.models.DriverJobDetailsRes
 import com.grx.lsc.domain.use_case.location.GetCurrentLocationUseCase
@@ -19,8 +16,6 @@ import com.grx.lsc.domain.use_case.networks.DriverJobStoreUseCase
 import com.grx.lsc.domain.use_case.shared_pref.GetTokenUseCase
 import com.grx.lsc.ui.navigation.AppRoute
 import com.grx.lsc.ui.navigation.BottomNavigator
-import com.grx.lsc.ui.navigation.sharedViewModel
-import com.grx.lsc.ui.screens.home.HomeViewModel
 import com.grx.lsc.utils.BitmapToUri
 import com.grx.lsc.utils.GetMultipartPart
 import com.grx.lsc.utils.Resource
@@ -183,7 +178,7 @@ class EnterDetailsViewModel @Inject constructor(
                                 copy(isLoading = false)
                             }
                             if (resource.data?.message == "Data updated successfully") {
-                                bottomNavigator.navController.navigate(AppRoute.Reached.route)
+                                bottomNavigator.navigate(AppRoute.Reached)
                             }
                         }
 

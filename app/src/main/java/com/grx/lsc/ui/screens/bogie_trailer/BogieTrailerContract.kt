@@ -1,9 +1,9 @@
-package com.grx.lsc.ui.screens.boggie_trailer
+package com.grx.lsc.ui.screens.bogie_trailer
 
 import com.grx.lsc.domain.models.DriverJobDetailsRes
 
 
-class BoggieTrailerContract {
+class BogieTrailerContract {
 
     companion object{
         val tabLabelList = listOf("Boggie No", "Trailer NO")

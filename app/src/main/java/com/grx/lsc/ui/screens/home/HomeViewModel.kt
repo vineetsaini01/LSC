@@ -1,6 +1,5 @@
 package com.grx.lsc.ui.screens.home
 
-
 import androidx.lifecycle.viewModelScope
 import com.grx.lsc.core.base_view_model.BaseViewModel
 import com.grx.lsc.domain.models.DriverJobDetailsRes
@@ -40,6 +39,7 @@ class HomeViewModel @Inject constructor(
         setState {
             copy(driverJobDetailsRes = driverJobDetailsRes)
         }
+
     }
 
 
@@ -57,7 +57,7 @@ class HomeViewModel @Inject constructor(
                 }
 
                 is HomeContract.Event.OnPressedQrCode -> {
-                    bottomNavigator.navController.navigate(AppRoute.QRCode.route)
+                    bottomNavigator.navigate(AppRoute.QRCode)
                 }
             }
         }
@@ -112,7 +112,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
 
             repository.drierJobStatus(
-                id = state.value.driverJobDetailsRes!!.data!!.id!!.toString(),
+                id = state.value.driverJobDetailsRes?.data?.id!!.toString(),
                 status = status,
                 token = "Bearer " + getTokenUseCase(),
             ).onEach { resource ->
@@ -128,11 +128,11 @@ class HomeViewModel @Inject constructor(
                                 }
                             } else {
                                 logoutUseCase()
-                                appNavigator.navController.popBackStack(
-                                    route = AppRoute.BottomNavRoute.route,
+                                appNavigator.popBackStack(
+                                    route = AppRoute.BottomNavRoute,
                                     inclusive = true
                                 )
-                                appNavigator.navController.navigate(AppRoute.AuthRoute.route)
+                                appNavigator.navigate(AppRoute.AuthRoute)
                             }
                         }
                     }

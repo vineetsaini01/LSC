@@ -3,8 +3,6 @@ package com.grx.lsc.ui.screens.splash
 import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.grx.lsc.domain.use_case.shared_pref.GetTokenUseCase
 import com.grx.lsc.ui.navigation.AppNavigator
 import com.grx.lsc.ui.navigation.AppRoute
@@ -31,8 +29,8 @@ class SplashViewModel @Inject constructor(
         } else {
             AppRoute.BottomNavRoute
         }
-        appNavigator.navController.popBackStack()
-        appNavigator.navController.navigate(route.route)
+        appNavigator.popBackStack()
+        appNavigator.navigate(route)
 
 
     }

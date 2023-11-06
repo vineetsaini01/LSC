@@ -29,7 +29,7 @@ class BottomViewModel @Inject constructor(
     var isLoading by mutableStateOf(false)
     var driverJobDetailsRes: DriverJobDetailsRes? = null
 
-    private val onDestinationChangedListener =
+    private val onDestinationChangedListener: NavController.OnDestinationChangedListener =
         NavController.OnDestinationChangedListener { _, destination, _ ->
             hasShowTopBottomNav =
                 destination.route != AppRoute.QRCode.route
@@ -37,11 +37,12 @@ class BottomViewModel @Inject constructor(
 
 
     fun setDestinationChangedListener() {
-        bottomNavigator.navController.addOnDestinationChangedListener(onDestinationChangedListener)
+        bottomNavigator.getNavController()
+            ?.addOnDestinationChangedListener(onDestinationChangedListener)
     }
 
     override fun onCleared() {
-        bottomNavigator.navController.removeOnDestinationChangedListener(
+        bottomNavigator.getNavController()?.removeOnDestinationChangedListener(
             onDestinationChangedListener
         )
         super.onCleared()

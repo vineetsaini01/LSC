@@ -27,7 +27,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    appNavigator.SetNavController()
+                    appNavigator.setNavController(
+                        navController = rememberNavController(),
+                        owner = this
+                    )
                     AppNavHost(
                         appNavigator = appNavigator
                     )
