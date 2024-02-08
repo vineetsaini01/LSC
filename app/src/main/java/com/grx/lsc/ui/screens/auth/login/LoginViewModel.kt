@@ -2,6 +2,7 @@ package com.grx.lsc.ui.screens.auth.login
 
 import androidx.lifecycle.viewModelScope
 import com.grx.lsc.core.base_view_model.BaseViewModel
+import com.grx.lsc.domain.use_case.networks.LoginUseCase
 import com.grx.lsc.domain.use_case.networks.SendVerificationCodeUseCase
 import com.grx.lsc.domain.use_case.networks.VerifyCodeUseCase
 import com.grx.lsc.domain.use_case.shared_pref.SaveTokenUseCase
@@ -24,6 +25,7 @@ class LoginViewModel @Inject constructor(
     private val saveTokenUseCase: SaveTokenUseCase,
     private val appNavigator: AppNavigator,
     private val sendVerificationCodeUseCase: SendVerificationCodeUseCase,
+    private val loginUseCase: LoginUseCase,
     private val verifyCodeUseCase: VerifyCodeUseCase,
 ) : BaseViewModel<LoginContract.Event, LoginContract.State>(LoginContract.State()) {
 
@@ -44,6 +46,12 @@ class LoginViewModel @Inject constructor(
                     }
                 }
 
+                is LoginContract.Event.OnChangedPassword -> {
+                    setState {
+                        copy( password= newPassword)
+                    }
+                }
+
                 is LoginContract.Event.SendOtp -> {
                     val phoneNumberResult = validatePhoneNumber.invoke(state.value.mobileNo)
                     if (!phoneNumberResult.success) {
@@ -53,6 +61,17 @@ class LoginViewModel @Inject constructor(
                         return
                     }
                     sendVerificationCode()
+                }
+
+                is LoginContract.Event.Login -> {
+                    val phoneNumberResult = validatePhoneNumber.invoke(state.value.mobileNo)
+                    if (!phoneNumberResult.success) {
+                        setState {
+                            copy(mobileError = phoneNumberResult.message)
+                        }
+                        return
+                    }
+                    login()
                 }
 
                 is LoginContract.Event.VerifyCode -> {
@@ -66,6 +85,8 @@ class LoginViewModel @Inject constructor(
                     verifyCode()
                 }
 
+
+
                 is LoginContract.Event.OnBackPress -> {
                     appNavigator.popBackStack()
                 }
@@ -73,6 +94,44 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+
+    private fun login() {
+        viewModelScope.launch(Dispatchers.IO) {
+            loginUseCase(
+                mobile = state.value.mobileNo,
+                password = state.value.password
+            ).onEach { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        if (resource.data?.message == "Login successful") {
+                            saveTokenUseCase(resource.data.token!!)
+                            appNavigator.popBackStack(AppRoute.AuthRoute, true)
+                            appNavigator.navigate(AppRoute.BottomNavRoute)
+                        } else {
+                            setState {
+                                copy(
+                                    mobileError = resource.data?.message
+                                )
+                            }
+                        }
+                    }
+
+                    is Resource.Error -> {
+                        setState {
+                            copy(isLoading = false)
+                        }
+                    }
+
+                    is Resource.Loading -> {
+                        setState {
+                            copy(isLoading = true)
+                        }
+                    }
+                }
+            }.launchIn(viewModelScope)
+        }
+
+    }
 
     private fun sendVerificationCode() {
         viewModelScope.launch(Dispatchers.IO) {

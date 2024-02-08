@@ -1,11 +1,7 @@
 package com.grx.lsc.ui.screens.auth.login
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -60,6 +56,14 @@ fun LoginScreen(
             label = "Mobile No"
         )
 
+        CustomTextField(
+            value = state.password,
+            onValueChange = {
+                onEvent(LoginContract.Event.OnChangedPassword(it))
+            },
+            label = "Password"
+        )
+
         Text(
             text = buildAnnotatedString {
                 append("By continuing, You agree to our \n")
@@ -74,10 +78,10 @@ fun LoginScreen(
         Button(
             modifier = Modifier
                 .fillMaxWidth(),
-            onClick = { onEvent(LoginContract.Event.SendOtp) },
+            onClick = { onEvent(LoginContract.Event.Login) },
             shape = RoundedCornerShape(10.dp),
         ) {
-            Text("Send Otp")
+            Text("Login")
         }
     }
 

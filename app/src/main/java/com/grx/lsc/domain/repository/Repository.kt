@@ -1,9 +1,6 @@
 package com.grx.lsc.domain.repository
 
-import com.grx.lsc.domain.models.DriverJobDetailsRes
-import com.grx.lsc.domain.models.JobStatusRes
-import com.grx.lsc.domain.models.SendVerificationCodeRes
-import com.grx.lsc.domain.models.VerifyCodeRes
+import com.grx.lsc.domain.models.*
 import com.grx.lsc.utils.Resource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
@@ -15,6 +12,11 @@ interface Repository {
         verificationCode: String,
         mobile: String,
     ): Flow<Resource<VerifyCodeRes?>>
+
+    suspend fun login(
+        mobile: String,
+        password: String,
+    ): Flow<Resource<LoginRes?>>
 
     suspend fun driverJobDetails(token: String): Flow<Resource<DriverJobDetailsRes?>>
     suspend fun drierJobStatus(

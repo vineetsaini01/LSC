@@ -31,12 +31,17 @@ android {
             )
         }
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+
+//        sourceCompatibility = JavaVersion.VERSION_1_8
+//        targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "11"
+        //jvmTarget = '1.8'
     }
 
     buildFeatures {
@@ -44,12 +49,13 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
+        // kotlinCompilerExtensionVersion '1.1.1'
     }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+//    packagingOptions {
+//        resources {
+//            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+//        }
+//    }
 }
 
 dependencies {
@@ -99,4 +105,4 @@ dependencies {
 
 }
 
-kapt { correctErrorTypes=true }
+kapt { correctErrorTypes = true }

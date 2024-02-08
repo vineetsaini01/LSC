@@ -1,10 +1,7 @@
 package com.grx.lsc.data.repository
 
 import com.grx.lsc.data.remote.ApiService
-import com.grx.lsc.domain.models.DriverJobDetailsRes
-import com.grx.lsc.domain.models.JobStatusRes
-import com.grx.lsc.domain.models.SendVerificationCodeRes
-import com.grx.lsc.domain.models.VerifyCodeRes
+import com.grx.lsc.domain.models.*
 import com.grx.lsc.domain.repository.Repository
 import com.grx.lsc.mapper.Mapper.toDriverJobDetailsRes
 import com.grx.lsc.utils.Resource
@@ -60,6 +57,24 @@ class RepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun login(mobile: String, password: String): Flow<Resource<LoginRes?>> =
+        flow {
+            emit(Resource.Loading())
+            val remoteData = try {
+                apiHelper.login(mobile, password)
+            } catch (e: HttpException) {
+                emit(Resource.Error(message = "An unexpected error occurred"))
+                null
+            } catch (e: IOException) {
+                emit(Resource.Error(message = "Couldn't reach server. check you internet connection"))
+                null
+            }
+            remoteData?.let { data ->
+                emit(Resource.Success(data = data.toLoginRes()))
+            }
+        }
+
+
     override suspend fun driverJobDetails(token: String): Flow<Resource<DriverJobDetailsRes?>> =
         flow {
             emit(Resource.Loading())
@@ -105,7 +120,7 @@ class RepositoryImpl @Inject constructor(
     ): Flow<Resource<JobStatusRes?>> = flow {
         emit(Resource.Loading())
         val remoteData = try {
-            apiHelper.uploadVehicleNumber(vehicleNumber = vehicleNumber, id = id,token=token)
+            apiHelper.uploadVehicleNumber(vehicleNumber = vehicleNumber, id = id, token = token)
         } catch (e: HttpException) {
             emit(Resource.Error(message = "An unexpected error occurred"))
             null

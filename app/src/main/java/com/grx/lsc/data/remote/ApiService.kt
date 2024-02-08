@@ -1,9 +1,6 @@
 package com.grx.lsc.data.remote
 
-import com.grx.lsc.data.dto.DriverJobDetailsResDTO
-import com.grx.lsc.data.dto.JobStatusResDTO
-import com.grx.lsc.data.dto.SendVerificationCodeResDTO
-import com.grx.lsc.data.dto.VerifyCodeResDTO
+import com.grx.lsc.data.dto.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.*
@@ -16,6 +13,13 @@ interface ApiService {
     suspend fun sendVerificationCode(
         @Field("mobile") mobile: String,
     ): SendVerificationCodeResDTO
+
+    @FormUrlEncoded
+    @POST("login")
+    suspend fun login(
+        @Field("mobile") mobile: String,
+        @Field("password") password: String,
+    ): LoginResDTO
 
     @FormUrlEncoded
     @POST("verify-code")
